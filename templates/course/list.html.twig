@@ -1,0 +1,9 @@
+<h1>All Courses</h1>
+
+<ul>
+    {% for course in courses %}
+        <li>{{ course.title }} — {{ course.price }}</li>
+    {% else %}
+        <li>No courses found.</li>
+    {% endfor %}
+</ul>
