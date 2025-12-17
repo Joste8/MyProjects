@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New ProductSize{% endblock %}
+
+{% block body %}
+    <h1>Create new ProductSize</h1>
+
+    {{ include('product_size/_form.html.twig') }}
+
+    <a href="{{ path('app_product_size_index') }}">back to list</a>
+{% endblock %}

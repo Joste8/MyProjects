@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ProductSize{% endblock %}
+
+{% block body %}
+    <h1>ProductSize</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ product_size.id }}</td>
+            </tr>
+            <tr>
+                <th>SizeName</th>
+                <td>{{ product_size.sizeName }}</td>
+            </tr>
+            <tr>
+                <th>Stock</th>
+                <td>{{ product_size.stock }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_product_size_index') }}">back to list</a>
+
+    <a href="{{ path('app_product_size_edit', {'id': product_size.id}) }}">edit</a>
+
+    {{ include('product_size/_delete_form.html.twig') }}
+{% endblock %}

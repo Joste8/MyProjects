@@ -3,12 +3,13 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Product;
+use App\Form\ProductVariantType;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+
+
 
 class ProductCrudController extends AbstractCrudController
 {
@@ -20,18 +21,21 @@ class ProductCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id')->onlyOnIndex(),
+            TextField::new('name'),
+            IntegerField::new('price'),
 
-            TextField::new('name')
-                ->setColumns(6),
+            // ✅ TOTAL STOCK COLUMN
+        IntegerField::new('totalStock', 'Total Stock')
+            ->onlyOnIndex(),
 
-            IntegerField::new('price')
-                ->setColumns(6),
-
-            TextEditorField::new('description')
-                ->hideOnIndex()
-                ->setNumOfRows(8),
+            CollectionField::new('variants')
+                ->setEntryType(ProductVariantType::class)
+                ->allowAdd()
+                ->allowDelete()
+                ->renderExpanded()
+                ->setFormTypeOptions([
+                    'by_reference' => false,
+                ]),
         ];
     }
 }
-

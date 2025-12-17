@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ProductSize index{% endblock %}
+
+{% block body %}
+    <h1>ProductSize index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>SizeName</th>
+                <th>Stock</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for product_size in product_sizes %}
+            <tr>
+                <td>{{ product_size.id }}</td>
+                <td>{{ product_size.sizeName }}</td>
+                <td>{{ product_size.stock }}</td>
+                <td>
+                    <a href="{{ path('app_product_size_show', {'id': product_size.id}) }}">show</a>
+                    <a href="{{ path('app_product_size_edit', {'id': product_size.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_product_size_new') }}">Create new</a>
+{% endblock %}

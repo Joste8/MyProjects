@@ -2,15 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\DBAL\Types\Types;   
 
-#[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\Entity]
 class Product
-
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,22 +20,20 @@ class Product
     #[ORM\Column]
     private ?int $price = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $description = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $size = null;
-
-    /**
-     * @var Collection<int, ProductSize>
-     */
-    #[ORM\OneToMany(targetEntity: ProductSize::class, mappedBy: 'product')]
-    private Collection $productSizes;
+    #[ORM\OneToMany(
+        mappedBy: 'product',
+        targetEntity: ProductVariant::class,
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    private Collection $variants;
 
     public function __construct()
     {
-        $this->productSizes = new ArrayCollection();
+        $this->variants = new ArrayCollection();
     }
+
+    // ✅ REQUIRED GETTERS / SETTERS
 
     public function getId(): ?int
     {
@@ -50,10 +45,9 @@ class Product
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -62,64 +56,47 @@ class Product
         return $this->price;
     }
 
-    public function setPrice(int $price): static
+    public function setPrice(int $price): self
     {
         $this->price = $price;
-
         return $this;
     }
 
-    public function getDescription(): ?string
+    // ✅ VARIANTS
+
+    public function getVariants(): Collection
     {
-        return $this->description;
+        return $this->variants;
     }
 
-    public function setDescription(?string $description): static
+    public function addVariant(ProductVariant $variant): self
     {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function getSize(): ?string
-    {
-        return $this->size;
-    }
-
-    public function setSize(string $size): static
-    {
-        $this->size = $size;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, ProductSize>
-     */
-    public function getProductSizes(): Collection
-    {
-        return $this->productSizes;
-    }
-
-    public function addProductSize(ProductSize $productSize): static
-    {
-        if (!$this->productSizes->contains($productSize)) {
-            $this->productSizes->add($productSize);
-            $productSize->setProduct($this);
+        if (!$this->variants->contains($variant)) {
+            $this->variants[] = $variant;
+            $variant->setProduct($this);
         }
-
         return $this;
     }
 
-    public function removeProductSize(ProductSize $productSize): static
+    public function getTotalStock(): int
+{
+    $total = 0;
+
+    foreach ($this->variants as $variant) {
+        $total += $variant->getStock();
+    }
+
+    return $total;
+}
+
+
+    public function removeVariant(ProductVariant $variant): self
     {
-        if ($this->productSizes->removeElement($productSize)) {
-            // set the owning side to null (unless already changed)
-            if ($productSize->getProduct() === $this) {
-                $productSize->setProduct(null);
+        if ($this->variants->removeElement($variant)) {
+            if ($variant->getProduct() === $this) {
+                $variant->setProduct(null);
             }
         }
-
         return $this;
     }
 }
