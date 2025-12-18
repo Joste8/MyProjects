@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Product
 {
+    // ✅ PRIMARY KEY (MANDATORY)
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -17,7 +18,7 @@ class Product
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $price = null;
 
     #[ORM\OneToMany(
@@ -33,7 +34,9 @@ class Product
         $this->variants = new ArrayCollection();
     }
 
-    // ✅ REQUIRED GETTERS / SETTERS
+    // --------------------
+    // GETTERS / SETTERS
+    // --------------------
 
     public function getId(): ?int
     {
@@ -51,18 +54,30 @@ class Product
         return $this;
     }
 
-    public function getPrice(): ?int
+    // --------------------
+    // PRICE FROM VARIANTS
+    // --------------------
+
+    public function updatePriceFromVariants(): void
     {
-        return $this->price;
+        if ($this->variants->isEmpty()) {
+            return;
+        }
+
+        $maxPrice = 0;
+
+        foreach ($this->variants as $variant) {
+            if ($variant->getPrice() > $maxPrice) {
+                $maxPrice = $variant->getPrice();
+            }
+        }
+
+        $this->price = $maxPrice;
     }
 
-    public function setPrice(int $price): self
-    {
-        $this->price = $price;
-        return $this;
-    }
-
-    // ✅ VARIANTS
+    // --------------------
+    // VARIANTS
+    // --------------------
 
     public function getVariants(): Collection
     {
@@ -75,21 +90,11 @@ class Product
             $this->variants[] = $variant;
             $variant->setProduct($this);
         }
+
         return $this;
     }
 
-    public function getTotalStock(): int
-{
-    $total = 0;
-
-    foreach ($this->variants as $variant) {
-        $total += $variant->getStock();
-    }
-
-    return $total;
-}
-
-
+    // ✅ THIS METHOD IS REQUIRED (YOUR ERROR FIX)
     public function removeVariant(ProductVariant $variant): self
     {
         if ($this->variants->removeElement($variant)) {
@@ -97,6 +102,33 @@ class Product
                 $variant->setProduct(null);
             }
         }
+
         return $this;
+    }
+
+    // --------------------
+    // FRONT PAGE HELPERS
+    // --------------------
+
+    public function getTotalStock(): int
+    {
+        $total = 0;
+
+        foreach ($this->variants as $variant) {
+            $total += $variant->getStock();
+        }
+
+        return $total;
+    }
+
+    public function getSizesLabel(): string
+    {
+        $sizes = [];
+
+        foreach ($this->variants as $variant) {
+            $sizes[] = $variant->getSize();
+        }
+
+        return implode(', ', array_unique($sizes));
     }
 }

@@ -1,14 +1,14 @@
 # AI Coding Agent Instructions for MyProjects
 
 ## Project Overview
-This is a Symfony 7.3 web application built with Doctrine ORM, PostgreSQL database, and EasyAdmin for admin interfaces. It manages entities like Users, Courses, Products (with sizes), and Tasks. Frontend uses Twig templates, Stimulus.js for interactivity, and Symfony Asset Mapper for assets.
+This is a Symfony 7.3 web application built with Doctrine ORM, PostgreSQL database, and EasyAdmin for admin interfaces. It manages entities like Users, Courses, Products (with variants for sizes/colors), Tasks. Frontend uses Twig templates, Stimulus.js for interactivity, and Symfony Asset Mapper for assets.
 
 ## Architecture
 - **Backend**: Symfony framework with MicroKernel, attribute-based routing (`#[Route]`), and service injection.
 - **Database**: PostgreSQL via Docker Compose; Doctrine ORM with attribute mappings (`#[ORM\Entity]`, `#[ORM\Column]`).
 - **Admin**: EasyAdmin Bundle for CRUD interfaces (e.g., `ProductCrudController` configures fields like `TextField::new('name')`).
 - **Frontend**: Twig templates in `templates/`, Stimulus controllers in `assets/controllers/`, imported via Asset Mapper.
-- **Entities**: Located in `src/Entity/`, with relationships (e.g., `Product` one-to-many `ProductSize`).
+- **Entities**: Located in `src/Entity/`, with relationships (e.g., `Product` one-to-many `ProductVariant`).
 - **Controllers**: In `src/Controller/`, handle routes and render templates (e.g., `CourseController` for CRUD operations).
 - **Forms**: Symfony forms in `src/Form/`, tied to entities (e.g., `CourseType` extends `AbstractType`).
 - **Security**: User entity with roles, password hashing via `UserPasswordHasherInterface`.
@@ -28,7 +28,7 @@ This is a Symfony 7.3 web application built with Doctrine ORM, PostgreSQL databa
 - **Forms**: Build with `FormBuilderInterface`; validate with `isSubmitted() && isValid()`.
 - **Templates**: Extend `base.html.twig`; use Twig blocks; Stimulus via `data-controller` attributes.
 - **Migrations**: Auto-generated in `migrations/`; run with `php bin/console doctrine:migrations:migrate`.
-- **Admin CRUD**: Extend `AbstractCrudController`; configure fields in `configureFields()` (e.g., hide fields on index with `->hideOnIndex()`).
+- **Admin CRUD**: Extend `AbstractCrudController`; configure fields in `configureFields()` (e.g., hide fields on index with `->onlyOnIndex()`; use `CollectionField` for nested entities like `ProductVariant` in `ProductCrudController`).
 - **JS Controllers**: Named after files (e.g., `hello_controller.js` -> `data-controller="hello"`); import in `app.js`.
 - **Testing**: Functional tests with `static::createClient()`; assert responses with `assertResponseIsSuccessful()`.
 
@@ -39,9 +39,9 @@ This is a Symfony 7.3 web application built with Doctrine ORM, PostgreSQL databa
 - **Messenger**: Async processing with Doctrine Messenger (table `messenger_messages`).
 
 ## Examples
-- **Entity Relationship**: `ProductSize` belongs to `Product` via `#[ORM\ManyToOne(inversedBy: 'productSizes')]`.
+- **Entity Relationship**: `ProductVariant` belongs to `Product` via `#[ORM\ManyToOne(inversedBy: 'variants')]`; `Product` has `getTotalStock()` summing variant stocks.
 - **CRUD Flow**: In `CourseController::new()`, create form, handle request, persist with `$em->persist($course); $em->flush()`.
-- **Admin Config**: In `ProductCrudController`, fields like `IntegerField::new('price')->setColumns(6)`.
+- **Admin Config**: In `ProductCrudController`, fields like `IntegerField::new('price')->setColumns(6)`, `CollectionField::new('variants')->setEntryType(ProductVariantType::class)`.
 - **Stimulus Usage**: Controller connects to element with `this.element.textContent = 'Hello Stimulus!'`.
 - **Migration**: Add columns/tables in `up()` method with `$this->addSql('ALTER TABLE ...')`.
 

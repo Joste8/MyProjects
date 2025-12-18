@@ -1,22 +1,36 @@
-{% extends 'base.html.twig' %}
+<h2>{{ product.name }}</h2>
 
-{% block title %}Course{% endblock %}
+<p>Price: ₹{{ product.price }}</p>
 
-{% block body %}
-    <h1>Course</h1>
+<button onclick="toggleSizeChart()" class="btn btn-outline-info">
+    Size Chart
+</button>
 
-    <table class="table">
+<div id="sizeChart" style="display:none; margin-top:15px;">
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>Size</th>
+                <th>Chest (cm)</th>
+                <th>Length (cm)</th>
+            </tr>
+        </thead>
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ course.id }}</td>
+                <td>S</td>
+                <td>90</td>
+                <td>65</td>
+            </tr>
+            <tr>
+                <td>M</td>
+                <td>100</td>
+                <td>68</td>
+            </tr>
+            <tr>
+                <td>L</td>
+                <td>110</td>
+                <td>71</td>
             </tr>
         </tbody>
     </table>
-
-    <a href="{{ path('app_course_index') }}">back to list</a>
-
-    <a href="{{ path('app_course_edit', {'id': course.id}) }}">edit</a>
-
-    {{ include('course/_delete_form.html.twig') }}
-{% endblock %}
+</div>

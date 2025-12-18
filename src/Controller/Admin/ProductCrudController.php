@@ -9,8 +9,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 
-
-
 class ProductCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
@@ -22,12 +20,12 @@ class ProductCrudController extends AbstractCrudController
     {
         return [
             TextField::new('name'),
-            IntegerField::new('price'),
 
-            // ✅ TOTAL STOCK COLUMN
-        IntegerField::new('totalStock', 'Total Stock')
-            ->onlyOnIndex(),
+            // ✅ TOTAL STOCK (index only)
+            IntegerField::new('totalStock', 'Total Stock')
+                ->onlyOnIndex(),
 
+            // ✅ INLINE VARIANTS
             CollectionField::new('variants')
                 ->setEntryType(ProductVariantType::class)
                 ->allowAdd()
