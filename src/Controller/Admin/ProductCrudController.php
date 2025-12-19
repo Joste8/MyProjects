@@ -8,6 +8,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud; // ✅ IMPORTANT
 
 class ProductCrudController extends AbstractCrudController
 {
@@ -21,11 +22,12 @@ class ProductCrudController extends AbstractCrudController
         return [
             TextField::new('name'),
 
-            // ✅ TOTAL STOCK (index only)
             IntegerField::new('totalStock', 'Total Stock')
                 ->onlyOnIndex(),
 
-            // ✅ INLINE VARIANTS
+            TextField::new('variantAttributes', 'Attributes')
+                ->onlyOnIndex(),
+
             CollectionField::new('variants')
                 ->setEntryType(ProductVariantType::class)
                 ->allowAdd()

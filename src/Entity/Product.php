@@ -2,14 +2,13 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 class Product
 {
-    // ✅ PRIMARY KEY (MANDATORY)
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -17,9 +16,6 @@ class Product
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $price = null;
 
     #[ORM\OneToMany(
         mappedBy: 'product',
@@ -33,10 +29,6 @@ class Product
     {
         $this->variants = new ArrayCollection();
     }
-
-    // --------------------
-    // GETTERS / SETTERS
-    // --------------------
 
     public function getId(): ?int
     {
@@ -54,31 +46,6 @@ class Product
         return $this;
     }
 
-    // --------------------
-    // PRICE FROM VARIANTS
-    // --------------------
-
-    public function updatePriceFromVariants(): void
-    {
-        if ($this->variants->isEmpty()) {
-            return;
-        }
-
-        $maxPrice = 0;
-
-        foreach ($this->variants as $variant) {
-            if ($variant->getPrice() > $maxPrice) {
-                $maxPrice = $variant->getPrice();
-            }
-        }
-
-        $this->price = $maxPrice;
-    }
-
-    // --------------------
-    // VARIANTS
-    // --------------------
-
     public function getVariants(): Collection
     {
         return $this->variants;
@@ -94,7 +61,6 @@ class Product
         return $this;
     }
 
-    // ✅ THIS METHOD IS REQUIRED (YOUR ERROR FIX)
     public function removeVariant(ProductVariant $variant): self
     {
         if ($this->variants->removeElement($variant)) {
@@ -106,29 +72,36 @@ class Product
         return $this;
     }
 
-    // --------------------
-    // FRONT PAGE HELPERS
-    // --------------------
-
+    // ✅ Total Stock
     public function getTotalStock(): int
     {
         $total = 0;
 
         foreach ($this->variants as $variant) {
-            $total += $variant->getStock();
+            $total += $variant->getStock() ?? 0;
         }
 
         return $total;
     }
 
-    public function getSizesLabel(): string
+    // ✅ Size / Colour / Capacity summary
+    public function getVariantAttributes(): string
     {
-        $sizes = [];
+        $result = [];
 
         foreach ($this->variants as $variant) {
-            $sizes[] = $variant->getSize();
+            $attrs = [];
+
+            foreach ($variant->getAttributes() as $attr) {
+                $attrs[] =
+                    $attr->getAttribute()->getName() . ': ' . $attr->getValue();
+            }
+
+            if (!empty($attrs)) {
+                $result[] = implode(', ', $attrs);
+            }
         }
 
-        return implode(', ', array_unique($sizes));
+        return implode(' | ', $result);
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 class ProductVariant
@@ -12,44 +14,32 @@ class ProductVariant
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $size = null;
-
-    #[ORM\Column(length: 50)]
-    private ?string $color = null;
-
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column]
     private ?int $price = null;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column]
     private ?int $stock = 0;
 
     #[ORM\ManyToOne(inversedBy: 'variants')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
-    // GETTERS & SETTERS
+    #[ORM\OneToMany(
+        mappedBy: 'variant',
+        targetEntity: VariantAttribute::class,
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    private Collection $attributes;
 
-    public function getSize(): ?string
+    public function __construct()
     {
-        return $this->size;
+        $this->attributes = new ArrayCollection();
     }
 
-    public function setSize(?string $size): self
+    public function getId(): ?int
     {
-        $this->size = $size;
-        return $this;
-    }
-
-    public function getColor(): ?string
-    {
-        return $this->color;
-    }
-
-    public function setColor(?string $color): self
-    {
-        $this->color = $color;
-        return $this;
+        return $this->id;
     }
 
     public function getPrice(): ?int
@@ -57,7 +47,7 @@ class ProductVariant
         return $this->price;
     }
 
-    public function setPrice(?int $price): self
+    public function setPrice(int $price): self
     {
         $this->price = $price;
         return $this;
@@ -68,7 +58,7 @@ class ProductVariant
         return $this->stock;
     }
 
-    public function setStock(?int $stock): self
+    public function setStock(int $stock): self
     {
         $this->stock = $stock;
         return $this;
@@ -82,6 +72,32 @@ class ProductVariant
     public function setProduct(?Product $product): self
     {
         $this->product = $product;
+        return $this;
+    }
+
+    public function getAttributes(): Collection
+    {
+        return $this->attributes;
+    }
+
+    public function addAttribute(VariantAttribute $attribute): self
+    {
+        if (!$this->attributes->contains($attribute)) {
+            $this->attributes[] = $attribute;
+            $attribute->setVariant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAttribute(VariantAttribute $attribute): self
+    {
+        if ($this->attributes->removeElement($attribute)) {
+            if ($attribute->getVariant() === $this) {
+                $attribute->setVariant(null);
+            }
+        }
+
         return $this;
     }
 }
