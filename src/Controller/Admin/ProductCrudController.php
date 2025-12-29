@@ -8,7 +8,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud; // ✅ IMPORTANT
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+
 
 class ProductCrudController extends AbstractCrudController
 {
@@ -18,24 +19,15 @@ class ProductCrudController extends AbstractCrudController
     }
 
     public function configureFields(string $pageName): iterable
-    {
-        return [
-            TextField::new('name'),
+{
+    return [
+        TextField::new('name'),
 
-            IntegerField::new('totalStock', 'Total Stock')
-                ->onlyOnIndex(),
-
-            TextField::new('variantAttributes', 'Attributes')
-                ->onlyOnIndex(),
-
-            CollectionField::new('variants')
-                ->setEntryType(ProductVariantType::class)
-                ->allowAdd()
-                ->allowDelete()
-                ->renderExpanded()
-                ->setFormTypeOptions([
-                    'by_reference' => false,
-                ]),
-        ];
-    }
+        AssociationField::new('attributeValues')
+            ->setFormTypeOptions([
+                'multiple' => true,
+                'by_reference' => false,
+            ]),
+    ];
+}
 }

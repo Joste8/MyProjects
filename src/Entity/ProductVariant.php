@@ -3,67 +3,39 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity]
 class ProductVariant
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $price = null;
-
-    #[ORM\Column]
-    private ?int $stock = 0;
-
+    // ✅ REQUIRED: Product relation
     #[ORM\ManyToOne(inversedBy: 'variants')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
-    #[ORM\OneToMany(
-        mappedBy: 'variant',
-        targetEntity: VariantAttribute::class,
-        cascade: ['persist', 'remove'],
-        orphanRemoval: true
-    )]
-    private Collection $attributes;
+    // ✅ Attribute Values relation
+    #[ORM\ManyToMany(targetEntity: AttributeValue::class)]
+    #[ORM\JoinTable(name: 'product_variant_attribute_value')]
+    private Collection $attributeValues;
 
     public function __construct()
     {
-        $this->attributes = new ArrayCollection();
+        $this->attributeValues = new ArrayCollection();
     }
 
+    // ---------------- ID ----------------
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getPrice(): ?int
-    {
-        return $this->price;
-    }
-
-    public function setPrice(int $price): self
-    {
-        $this->price = $price;
-        return $this;
-    }
-
-    public function getStock(): ?int
-    {
-        return $this->stock;
-    }
-
-    public function setStock(int $stock): self
-    {
-        $this->stock = $stock;
-        return $this;
-    }
-
+    // ---------------- PRODUCT ----------------
     public function getProduct(): ?Product
     {
         return $this->product;
@@ -75,29 +47,23 @@ class ProductVariant
         return $this;
     }
 
-    public function getAttributes(): Collection
+    // ---------------- ATTRIBUTE VALUES ----------------
+    public function getAttributeValues(): Collection
     {
-        return $this->attributes;
+        return $this->attributeValues;
     }
 
-    public function addAttribute(VariantAttribute $attribute): self
+    public function addAttributeValue(AttributeValue $value): self
     {
-        if (!$this->attributes->contains($attribute)) {
-            $this->attributes[] = $attribute;
-            $attribute->setVariant($this);
+        if (!$this->attributeValues->contains($value)) {
+            $this->attributeValues->add($value);
         }
-
         return $this;
     }
 
-    public function removeAttribute(VariantAttribute $attribute): self
+    public function removeAttributeValue(AttributeValue $value): self
     {
-        if ($this->attributes->removeElement($attribute)) {
-            if ($attribute->getVariant() === $this) {
-                $attribute->setVariant(null);
-            }
-        }
-
+        $this->attributeValues->removeElement($value);
         return $this;
     }
 }

@@ -1,0 +1,8 @@
+{% for variant in field.value %}
+    {% for attrValue in variant.attributeValues %}
+        <span class="badge badge-info">
+            {{ attrValue.attribute.name }}: {{ attrValue.value }}
+        </span>
+    {% endfor %}
+    <br>
+{% endfor %}

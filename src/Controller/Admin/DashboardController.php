@@ -3,7 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Product;
-//use App\Entity\ProductVariant;
+use App\Entity\Attribute;
+use App\Entity\AttributeValue;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
@@ -26,13 +27,10 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToCrud('Products', 'fas fa-box', Product::class);
+        yield MenuItem::section('Catalog');
 
-        // ✅ THIS IS ENOUGH
-        //yield MenuItem::linkToCrud(
-          //  'Product Variants',
-            //'fas fa-tags',
-            //ProductVariant::class
-        
+        yield MenuItem::linkToCrud('Products', 'fas fa-box', Product::class);
+        yield MenuItem::linkToCrud('Attributes', 'fas fa-tags', Attribute::class);
+        yield MenuItem::linkToCrud('Attribute Values', 'fas fa-list', AttributeValue::class);
     }
 }

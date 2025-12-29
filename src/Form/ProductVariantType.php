@@ -3,10 +3,10 @@
 namespace App\Form;
 
 use App\Entity\ProductVariant;
+use App\Entity\AttributeValue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ProductVariantType extends AbstractType
@@ -14,13 +14,18 @@ class ProductVariantType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('price', IntegerType::class)
-            ->add('stock', IntegerType::class)
-            ->add('attributes', CollectionType::class, [
-                'entry_type' => VariantAttributeType::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
+            ->add('price')
+            ->add('stock')
+
+            // 🔑 THIS IS THE MISSING PART
+            ->add('attributeValues', EntityType::class, [
+                'class' => AttributeValue::class,
+                'choice_label' => function (AttributeValue $av) {
+                    return $av->getAttribute()->getName() . ' : ' . $av->getValue();
+                },
+                'multiple' => true,
+                'expanded' => false, // dropdown
+                'required' => false,
             ]);
     }
 

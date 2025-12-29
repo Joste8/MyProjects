@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+
 
 #[ORM\Entity]
 class Product
@@ -15,19 +16,24 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name;
 
-    #[ORM\OneToMany(
-        mappedBy: 'product',
-        targetEntity: ProductVariant::class,
-        cascade: ['persist', 'remove'],
-        orphanRemoval: true
-    )]
-    private Collection $variants;
+    #[ORM\ManyToMany(targetEntity: AttributeValue::class)]
+#[ORM\JoinTable(
+    name: 'product_attribute_value',
+    joinColumns: [
+        new ORM\JoinColumn(name: 'product_id', referencedColumnName: 'id')
+    ],
+    inverseJoinColumns: [
+        new ORM\JoinColumn(name: 'attribute_value_id', referencedColumnName: 'id')
+    ]
+)]
+private Collection $attributeValues;
+
 
     public function __construct()
     {
-        $this->variants = new ArrayCollection();
+        $this->attributeValues = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -35,7 +41,7 @@ class Product
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -46,62 +52,22 @@ class Product
         return $this;
     }
 
-    public function getVariants(): Collection
+    public function getAttributeValues(): Collection
     {
-        return $this->variants;
+        return $this->attributeValues;
     }
 
-    public function addVariant(ProductVariant $variant): self
+    public function addAttributeValue(AttributeValue $value): self
     {
-        if (!$this->variants->contains($variant)) {
-            $this->variants[] = $variant;
-            $variant->setProduct($this);
+        if (!$this->attributeValues->contains($value)) {
+            $this->attributeValues->add($value);
         }
-
         return $this;
     }
 
-    public function removeVariant(ProductVariant $variant): self
+    public function removeAttributeValue(AttributeValue $value): self
     {
-        if ($this->variants->removeElement($variant)) {
-            if ($variant->getProduct() === $this) {
-                $variant->setProduct(null);
-            }
-        }
-
+        $this->attributeValues->removeElement($value);
         return $this;
-    }
-
-    // ✅ Total Stock
-    public function getTotalStock(): int
-    {
-        $total = 0;
-
-        foreach ($this->variants as $variant) {
-            $total += $variant->getStock() ?? 0;
-        }
-
-        return $total;
-    }
-
-    // ✅ Size / Colour / Capacity summary
-    public function getVariantAttributes(): string
-    {
-        $result = [];
-
-        foreach ($this->variants as $variant) {
-            $attrs = [];
-
-            foreach ($variant->getAttributes() as $attr) {
-                $attrs[] =
-                    $attr->getAttribute()->getName() . ': ' . $attr->getValue();
-            }
-
-            if (!empty($attrs)) {
-                $result[] = implode(', ', $attrs);
-            }
-        }
-
-        return implode(' | ', $result);
     }
 }
