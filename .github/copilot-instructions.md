@@ -45,5 +45,10 @@ This is a Symfony 7.3 web application built with Doctrine ORM, PostgreSQL databa
 - **Stimulus Usage**: Controller connects to element with `this.element.textContent = 'Hello Stimulus!'`.
 - **Migration**: Add columns/tables in `up()` method with `$this->addSql('ALTER TABLE ...')`.
 
-Reference: `src/Entity/Product.php`, `src/Controller/Admin/ProductCrudController.php`, `assets/controllers/hello_controller.js`.</content>
+Reference: `src/Entity/Product.php`, `src/Controller/Admin/ProductCrudController.php`, `assets/controllers/hello_controller.js`.  
+
+## Additional Notes
+- **Service Boundaries**: Services are defined in `config/services.yaml`, and dependency injection is used extensively throughout the application.
+- **Data Flows**: Data flows from the frontend (Twig/Stimulus) to the backend (Symfony controllers) and interacts with the database via Doctrine ORM.
+- **Debugging**: Use Symfony's built-in profiler for debugging requests and responses, accessible in the web toolbar when in development mode.</content>
 <parameter name="filePath">c:\Users\joste\Desktop\projct\MyProjects\.github\copilot-instructions.md
