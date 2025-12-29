@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit ProductAttributeValue{% endblock %}
+
+{% block body %}
+    <h1>Edit ProductAttributeValue</h1>
+
+    {{ include('product_attribute_value/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_product_attribute_value_index') }}">back to list</a>
+
+    {{ include('product_attribute_value/_delete_form.html.twig') }}
+{% endblock %}

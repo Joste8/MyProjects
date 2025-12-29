@@ -1,25 +1,30 @@
 <?php
 
+// src/Entity/ProductVariant.php
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 class ProductVariant
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column]
     private ?int $id = null;
 
-    // ✅ REQUIRED: Product relation
-    #[ORM\ManyToOne(inversedBy: 'variants')]
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'variants')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
-    // ✅ Attribute Values relation
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    private float $price;
+
+    #[ORM\Column]
+    private int $stock;
+
     #[ORM\ManyToMany(targetEntity: AttributeValue::class)]
     #[ORM\JoinTable(name: 'product_variant_attribute_value')]
     private Collection $attributeValues;
@@ -29,41 +34,13 @@ class ProductVariant
         $this->attributeValues = new ArrayCollection();
     }
 
-    // ---------------- ID ----------------
-    public function getId(): ?int
+    public function __toString(): string
     {
-        return $this->id;
-    }
-
-    // ---------------- PRODUCT ----------------
-    public function getProduct(): ?Product
-    {
-        return $this->product;
-    }
-
-    public function setProduct(?Product $product): self
-    {
-        $this->product = $product;
-        return $this;
-    }
-
-    // ---------------- ATTRIBUTE VALUES ----------------
-    public function getAttributeValues(): Collection
-    {
-        return $this->attributeValues;
-    }
-
-    public function addAttributeValue(AttributeValue $value): self
-    {
-        if (!$this->attributeValues->contains($value)) {
-            $this->attributeValues->add($value);
+        $attrs = [];
+        foreach ($this->attributeValues as $av) {
+            $attrs[] = $av->getAttribute()->getName().': '.$av->getValue();
         }
-        return $this;
-    }
 
-    public function removeAttributeValue(AttributeValue $value): self
-    {
-        $this->attributeValues->removeElement($value);
-        return $this;
+        return implode(', ', $attrs);
     }
 }

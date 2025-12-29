@@ -3,24 +3,22 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 class AttributeValue
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     private string $value;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Attribute::class, inversedBy: 'values')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Attribute $attribute = null;
 
-    // ✅ REQUIRED
     public function getId(): ?int
     {
         return $this->id;
@@ -42,15 +40,14 @@ class AttributeValue
         return $this->attribute;
     }
 
-    public function setAttribute(?Attribute $attribute): self
+    public function setAttribute(Attribute $attribute): self
     {
         $this->attribute = $attribute;
         return $this;
     }
 
-    // optional but recommended
     public function __toString(): string
     {
-        return $this->value;
+        return $this->attribute->getName() . ' : ' . $this->value;
     }
 }

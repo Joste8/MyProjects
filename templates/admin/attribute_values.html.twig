@@ -1,0 +1,20 @@
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for pav in field.value %}
+        <tr>
+            <td>{{ pav.attributeValue.attribute.name }}</td>
+            <td>{{ pav.attributeValue.value }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="2">No attribute values</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

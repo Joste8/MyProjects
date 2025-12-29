@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New ProductAttributeValue{% endblock %}
+
+{% block body %}
+    <h1>Create new ProductAttributeValue</h1>
+
+    {{ include('product_attribute_value/_form.html.twig') }}
+
+    <a href="{{ path('app_product_attribute_value_index') }}">back to list</a>
+{% endblock %}

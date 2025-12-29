@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 class Attribute
@@ -14,15 +14,10 @@ class Attribute
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
-    private ?string $name = null;
+    #[ORM\Column(length: 255)]
+    private string $name;
 
-    #[ORM\OneToMany(
-        mappedBy: 'attribute',
-        targetEntity: AttributeValue::class,
-        cascade: ['persist', 'remove'],
-        orphanRemoval: true
-    )]
+    #[ORM\OneToMany(mappedBy: 'attribute', targetEntity: AttributeValue::class)]
     private Collection $values;
 
     public function __construct()
@@ -30,14 +25,12 @@ class Attribute
         $this->values = new ArrayCollection();
     }
 
-    // ---------------- ID ----------------
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    // ---------------- NAME ----------------
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -48,34 +41,8 @@ class Attribute
         return $this;
     }
 
-    // ---------------- VALUES ----------------
-    public function getValues(): Collection
-    {
-        return $this->values;
-    }
-
-    public function addValue(AttributeValue $value): self
-    {
-        if (!$this->values->contains($value)) {
-            $this->values->add($value);
-            $value->setAttribute($this);
-        }
-        return $this;
-    }
-
-    public function removeValue(AttributeValue $value): self
-    {
-        if ($this->values->removeElement($value)) {
-            if ($value->getAttribute() === $this) {
-                $value->setAttribute(null);
-            }
-        }
-        return $this;
-    }
-
-    // ---------------- STRING (EasyAdmin / Forms) ----------------
     public function __toString(): string
     {
-        return (string) $this->name;
+        return $this->name;
     }
 }
