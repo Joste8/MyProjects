@@ -2,25 +2,27 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\AttributeValue;
+use App\Entity\ProductAttribute;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
-class AttributeValueCrudController extends AbstractCrudController
+class ProductAttributeCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
-        return AttributeValue::class;
+        return ProductAttribute::class;
     }
 
+    /*
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id')->hideOnForm(),
-            TextField::new('value'),
-            AssociationField::new('attribute'),
+            IdField::new('id'),
+            TextField::new('title'),
+            TextEditorField::new('description'),
         ];
     }
+    */
 }

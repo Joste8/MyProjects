@@ -5,7 +5,6 @@ namespace App\Controller\Admin;
 use App\Entity\Product;
 use App\Entity\Attribute;
 use App\Entity\AttributeValue;
-use App\Entity\ProductAttributeValue;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
@@ -27,16 +26,14 @@ class DashboardController extends AbstractDashboardController
     }
 
     public function configureMenuItems(): iterable
-    {
-        yield MenuItem::section('Catalog');
+{
+    yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
+    yield MenuItem::section('Catalog');
 
-        yield MenuItem::linkToCrud('Products', 'fas fa-box', Product::class);
-        yield MenuItem::linkToCrud('Attributes', 'fas fa-tags', Attribute::class);
-        yield MenuItem::linkToCrud('Attribute Values', 'fas fa-list', AttributeValue::class);
-        yield MenuItem::linkToCrud(
-            'Product Attribute Values',
-            'fas fa-tags',
-            ProductAttributeValue::class
-        );
-    }
+    yield MenuItem::linkToCrud('Products', 'fas fa-box', Product::class);
+
+    // താഴെ പറയുന്നവയ്ക്ക് CRUD Controller ഉണ്ടെങ്കിൽ മാത്രം കമന്റ് മാറ്റുക
+    // yield MenuItem::linkToCrud('Attributes', 'fas fa-tags', Attribute::class);
+    // yield MenuItem::linkToCrud('Attribute Values', 'fas fa-list', AttributeValue::class);
+}
 }

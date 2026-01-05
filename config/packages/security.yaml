@@ -16,12 +16,26 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+
+            # 👇 THIS IS IMPORTANT
             entry_point: App\Security\AppAuthenticator
+
             custom_authenticator:
                 - App\Security\AppAuthenticator
+
             logout:
                 path: app_logout
+                target: app_login
+
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+                path: /
 
     access_control:
-        - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/admin, roles: ROLE_ADMIN }
+    - path: ^/login
+      roles: PUBLIC_ACCESS
+
+    - path: ^/admin
+      roles: ROLE_ADMIN
+

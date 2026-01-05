@@ -3,31 +3,24 @@
 namespace App\Form;
 
 use App\Entity\ProductAttributeValue;
-use App\Entity\AttributeValue;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\ProductAttribute;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class ProductAttributeValueType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('attributeValue', EntityType::class, [
-                'class' => AttributeValue::class,
-                'choice_label' => 'value',
-                'placeholder' => 'Select Attribute Value',
+            ->add('attribute', EntityType::class, [
+                'class' => ProductAttribute::class,
+                'choice_label' => 'name',
+                'placeholder' => 'Select Attribute',
             ])
-            ->add('price', MoneyType::class, [
-                'currency' => 'INR',
-                'required' => false,
-            ])
-            ->add('stock', IntegerType::class, [
-                'required' => false,
-            ]);
+            ->add('attributeValue', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

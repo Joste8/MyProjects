@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 class ProductAttribute
@@ -12,27 +14,18 @@ class ProductAttribute
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100, unique: true)]
+    #[ORM\Column(length: 100)]
     private ?string $name = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    #[ORM\ManyToOne(inversedBy: 'attributes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Product $product = null;
 
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
+    #[ORM\OneToMany(mappedBy: 'attribute', targetEntity: ProductAttributeValue::class, cascade: ['persist', 'remove'])]
+    private Collection $values;
 
-    public function setName(string $name): self
+    public function __construct()
     {
-        $this->name = $name;
-        return $this;
-    }
-
-    public function __toString(): string
-    {
-        return (string) $this->name;
+        $this->values = new ArrayCollection();
     }
 }
