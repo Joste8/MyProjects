@@ -1,0 +1,30 @@
+<table class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Product</th>
+            <th>Variant</th>
+            <th>Qty</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in stockLogs %}
+            <tr>
+                <td>{{ log.createdAt|date('d-m-Y H:i') }}</td>
+                <td>{{ log.variant.product.name }}</td>
+                <td>{{ log.variant.attribute.name }} : {{ log.variant.value }}</td>
+                <td>
+                    <span class="badge bg-success">
+                        +{{ log.quantity }}
+                    </span>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4" class="text-center text-muted">
+                    No stock history
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

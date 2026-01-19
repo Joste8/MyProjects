@@ -1,0 +1,20 @@
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for product in products %}
+        <tr>
+            <td>{{ product.id }}</td>
+            <td>{{ product.name }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="2">No products found</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

@@ -11,89 +11,99 @@ class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 150)]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description = null;
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $price = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private ?string $price = null;
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $stock = null;
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    private ?array $extraAttributes = [];
-
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductAttribute::class, cascade: ['persist', 'remove'])]
-    private Collection $attributes;
-
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductVariant::class, cascade: ['persist', 'remove'])]
-    private Collection $variants;
+    #[ORM\OneToMany(
+        mappedBy: 'product',
+        targetEntity: ProductAttributeValue::class,
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    private Collection $attributeValues;
 
     public function __construct()
     {
-        // ബന്ധിപ്പിക്കപ്പെട്ട കളക്ഷനുകൾ ഇനിഷ്യലൈസ് ചെയ്യുന്നു
-        $this->attributes = new ArrayCollection();
-        $this->variants = new ArrayCollection();
+        $this->attributeValues = new ArrayCollection();
+        $this->stock = 0; // ഡിഫോൾട്ട് ആയി 0 നൽകുന്നു
     }
 
-    // --- Variants മാനേജ് ചെയ്യാനുള്ള ഫംഗ്‌ഷനുകൾ (ഇത് ക്ലാസിനുള്ളിൽ തന്നെ വേണം) ---
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): self
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?float $price): self
+    {
+        $this->price = $price;
+        return $this;
+    }
+
+    public function getStock(): ?int
+    {
+        return $this->stock;
+    }
+
+    public function setStock(?int $stock): self
+    {
+        $this->stock = $stock;
+        return $this;
+    }
 
     /**
-     * @return Collection<int, ProductVariant>
+     * @return Collection<int, ProductAttributeValue>
      */
-    public function getVariants(): Collection
+    public function getAttributeValues(): Collection
     {
-        return $this->variants;
+        return $this->attributeValues;
     }
 
-    public function addVariant(ProductVariant $variant): self
+    public function addAttributeValue(ProductAttributeValue $value): self
     {
-        if (!$this->variants->contains($variant)) {
-            $this->variants->add($variant);
-            $variant->setProduct($this);
+        if (!$this->attributeValues->contains($value)) {
+            $this->attributeValues->add($value);
+            $value->setProduct($this);
         }
         return $this;
     }
 
-    public function removeVariant(ProductVariant $variant): self
+    public function removeAttributeValue(ProductAttributeValue $value): self
     {
-        if ($this->variants->removeElement($variant)) {
-            if ($variant->getProduct() === $this) {
-                $variant->setProduct(null);
+        if ($this->attributeValues->removeElement($value)) {
+            if ($value->getProduct() === $this) {
+                $value->setProduct(null);
             }
         }
         return $this;
     }
 
-    // --- JSON ആട്രിബ്യൂട്ടുകൾ ---
-
-    public function getAttributesJson(): string
+    public function __toString(): string
     {
-        return json_encode($this->extraAttributes ?? [], JSON_PRETTY_PRINT);
+        return $this->name ?? '';
     }
-
-    public function setAttributesJson(?string $json): self
-    {
-        $this->extraAttributes = json_decode($json, true) ?? [];
-        return $this;
-    }
-
-    // --- സാധാരണ Getters & Setters ---
-
-    public function getId(): ?int { return $this->id; }
-
-    public function getName(): ?string { return $this->name; }
-    public function setName(string $name): self { $this->name = $name; return $this; }
-
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(?string $description): self { $this->description = $description; return $this; }
-
-    public function getPrice(): ?string { return $this->price; }
-    public function setPrice(string $price): self { $this->price = $price; return $this; }
-
-    public function __toString(): string { return $this->name ?? 'New Product'; }
-
-} 
+}

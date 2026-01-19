@@ -1,0 +1,33 @@
+<form method="post" action="{{ path('admin_purchase_stock') }}">
+    <div class="row g-3">
+
+        <div class="col-md-4">
+            <label class="form-label">Variant</label>
+            <select name="variant_id" class="form-select" required>
+                <option value="">-- Select Variant --</option>
+                {% for v in variants %}
+                    <option value="{{ v.id }}">
+                        {{ v.product.name }} - {{ v.attribute.name }} : {{ v.value }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Quantity</label>
+            <input type="number" name="quantity" class="form-control" min="1" required>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Purchase Price</label>
+            <input type="number" name="price" class="form-control" min="0" step="0.01">
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-success w-100">
+                ➕ Add Stock
+            </button>
+        </div>
+
+    </div>
+</form>

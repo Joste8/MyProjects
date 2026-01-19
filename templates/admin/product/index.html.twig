@@ -1,0 +1,27 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block head_stylesheets %}
+    {{ parent() }}
+    <style>
+        .variant-badge { 
+            display: inline-block;
+            padding: 0.25em 0.6em;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #1e293b;
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin: 2px;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    {# 🔹 DEFAULT PRODUCT CRUD TABLE ONLY #}
+    {{ parent() }}
+{% endblock %}
+
+{% block body_javascript %}
+    {{ parent() }}
+{% endblock %}

@@ -1,8 +1,15 @@
-{% extends '@EasyAdmin/Page/Content.html.twig' %}
+{% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block page_title %}Dashboard{% endblock %}
+{% block content_title %}Dashboard Summary{% endblock %}
 
-{% block page_content %}
-     <h2>welcome, Admin!</h2>
-     <p>This is my Custom dashboard.</p>
-{% endblock %}     
+{% block main %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white p-3 shadow-sm">
+                <h5>Total Products</h5>
+                <h2>{{ products|length }}</h2>
+            </div>
+        </div>
+        
+    </div>
+{% endblock %}

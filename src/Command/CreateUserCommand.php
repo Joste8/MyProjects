@@ -13,29 +13,28 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[AsCommand(
-    name: 'app:create-user', 
-    description: 'Creates a new user in the system',
+    name: 'app:create-user',
+    description: 'Creates a new user with ROLE_ADMIN',
 )]
-class CreateAdminUserCommand extends Command
+class CreateUserCommand extends Command
 {
     private $entityManager;
     private $passwordHasher;
 
     public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
     {
+        parent::__construct();
         $this->entityManager = $entityManager;
         $this->passwordHasher = $passwordHasher;
-
-        parent::__construct();
     }
 
     protected function configure(): void
-{
-    $this
-        ->addArgument('email', InputArgument::REQUIRED, 'The email of the user')
-        ->addArgument('password', InputArgument::REQUIRED, 'The password of the user')
-    ;
-}
+    {
+        $this
+            ->addArgument('email', InputArgument::REQUIRED, 'User email')
+            ->addArgument('password', InputArgument::REQUIRED, 'User password')
+        ;
+    }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -44,24 +43,24 @@ class CreateAdminUserCommand extends Command
         $password = $input->getArgument('password');
 
         try {
-            // 1. പുതിയ യൂസർ ഒബ്ജക്റ്റ് ഉണ്ടാക്കുന്നു
             $user = new User();
             $user->setEmail($email);
-            $user->setRoles(['ROLE_USER']); 
-
-            // 2. പാസ്‌വേഡ് ഹാഷ് ചെയ്യുന്നു
+            
+            // പാസ്‌വേഡ് ഹാഷ് ചെയ്ത ശേഷം മാത്രം സെറ്റ് ചെയ്യുന്നു
             $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
             $user->setPassword($hashedPassword);
+            
+            // അഡ്മിൻ അധികാരം നൽകുന്നു
+            $user->setRoles(['ROLE_ADMIN']);
 
-            // 3. ഡാറ്റാബേസിലേക്ക് സേവ് ചെയ്യുന്നു
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
-            $io->success(sprintf('User %s was successfully created!', $email));
+            $io->success(sprintf('Admin user "%s" created successfully!', $email));
 
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $io->error('Error creating user: ' . $e->getMessage());
+            $io->error('Error: ' . $e->getMessage());
             return Command::FAILURE;
         }
     }
