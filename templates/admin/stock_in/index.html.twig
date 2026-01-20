@@ -8,7 +8,7 @@
                 <tr>
                     <th>Date</th>
                     <th>Customer</th>
-                    <th>Product Item (Category/Sub)</th>
+                    <th>Category</th> <th>Sub Category</th> <th>Product Item</th>
                     <th>Prev.</th>
                     <th>Qty</th>
                     <th>Bal.</th>
@@ -18,19 +18,16 @@
             <tbody>
                 {% for item in history %}
                 <tr class="align-middle">
-                    <td class="small">{{ item.createdAt|date('d M Y, h:i A') }}</td>
+                    <td class="small" style="font-size: 11px;">{{ item.createdAt|date('d M Y, h:i A') }}</td>
                     <td><strong>{{ item.customerName }}</strong></td>
+                    
+                    {# Mapping Category and Sub Category from Product #}
+                    <td><span class="badge bg-primary">{{ item.product.subCategory.category.name }}</span></td>
+                    <td><span class="badge bg-info text-dark">{{ item.product.subCategory.name }}</span></td>
+                    
                     <td>
-                        {# Category and Sub-category mapping #}
-                        <small class="text-info d-block" style="font-size: 10px; text-transform: uppercase;">
-                            {{ item.product.subCategory.category.name|default('General') }} / 
-                            {{ item.product.subCategory.name|default('Uncategorized') }}
-                        </small>
-                        
                         {{ item.product.name }} 
-                        <span class="badge bg-light text-dark ms-1" style="font-size: 10px;">
-                            {{ item.variant.value }}
-                        </span>
+                        <span class="badge bg-light text-dark ms-1" style="font-size: 10px;">{{ item.variant.value }}</span>
                     </td>
                     <td>{{ item.previousStock }}</td>
                     <td><span class="badge bg-danger">{{ item.quantity }}</span></td>
@@ -43,10 +40,6 @@
                             <i class="fas fa-print"></i> Receipt
                         </a>
                     </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="7" class="text-center">No transactions found.</td>
                 </tr>
                 {% endfor %}
             </tbody>

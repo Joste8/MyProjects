@@ -23,6 +23,10 @@ class Product
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $stock = null;
 
+    #[ORM\ManyToOne(targetEntity: SubCategory::class)]
+    #[ORM\JoinColumn(nullable: true)] 
+    private ?SubCategory $subCategory = null;
+
     #[ORM\OneToMany(
         mappedBy: 'product',
         targetEntity: ProductAttributeValue::class,
@@ -34,7 +38,7 @@ class Product
     public function __construct()
     {
         $this->attributeValues = new ArrayCollection();
-        $this->stock = 0; // ഡിഫോൾട്ട് ആയി 0 നൽകുന്നു
+        $this->stock = 0;
     }
 
     public function getId(): ?int
@@ -72,6 +76,18 @@ class Product
     public function setStock(?int $stock): self
     {
         $this->stock = $stock;
+        return $this;
+    }
+
+    // SubCategory Getter & Setter
+    public function getSubCategory(): ?SubCategory
+    {
+        return $this->subCategory;
+    }
+
+    public function setSubCategory(?SubCategory $subCategory): self
+    {
+        $this->subCategory = $subCategory;
         return $this;
     }
 

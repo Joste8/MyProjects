@@ -4,10 +4,12 @@ framework:
 
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
+            # config/packages/messenger.yaml
+        transports:
             async:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
-                    use_notify: true
+                    use_notify: false  
                     check_delayed_interval: 60000
                 retry_strategy:
                     max_retries: 3

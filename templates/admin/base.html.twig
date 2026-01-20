@@ -1,5 +1,11 @@
-{% extends '@EasyAdmin/layout.html.twig' %}
-
-{% block content %}
-    {{ block('content') }}
-{% endblock %}
+<ul class="nav">
+    <li class="nav-item">
+        <a class="nav-link" href="{{ path('app_product_index') }}">Inventory</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ path('app_category_index') }}">Manage Categories</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ path('app_sub_category_index') }}">Manage Sub-Categories</a>
+    </li>
+</ul>
