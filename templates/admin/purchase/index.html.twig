@@ -1,55 +1,98 @@
-<div class="card bg-secondary text-white shadow-sm border-0">
-    <div class="card-header bg-dark text-white fw-bold">
-        Recent Transactions Log
+{# templates/admin/purchase/index.html.twig #}
+
+<div style="background-color: #0d1117; min-height: 100vh; color: #c9d1d9; padding: 25px; font-family: sans-serif;">
+    
+    {# Flash Messages for Success/Error #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div style="padding: 15px; margin-bottom: 20px; border-radius: 6px; background: {% if label == 'success' %}#238636{% else %}#da3633{% endif %}; color: white; font-weight: bold;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h2 style="color: white; margin: 0; font-weight: bold; letter-spacing: 1px;">RECENT TRANSACTIONS LOG</h2>
+            <p style="color: #8b949e; margin-top: 5px; font-size: 0.9rem;">Track all customer purchases and stock movements.</p>
+        </div>
+     
+        <button onclick="toggleModal()" style="background-color: #238636; color: white; padding: 10px 20px; border-radius: 6px; border:none; cursor:pointer; font-weight: bold; font-size: 0.85rem;">+ NEW TRANSACTION</button>
     </div>
-    <div class="table-responsive">
-        <table class="table table-dark table-hover mb-0">
+
+    {# --- Purchase Modal (Popup Form) --- #}
+    <div id="purchaseModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8);">
+        <div style="background-color: #161b22; margin: 10% auto; padding: 30px; border: 1px solid #30363d; width: 400px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+            <h3 style="color: white; margin-top: 0;">Record New Sale</h3>
+            <form action="{{ path('admin_purchase_process') }}" method="POST">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #8b949e; margin-bottom: 5px;">Customer Name</label>
+                    <input type="text" name="customer_name" placeholder="Enter name" required style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #8b949e; margin-bottom: 5px;">Select Product & Size</label>
+                    <select name="variant_id" required style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px;">
+                        {% for variant in variants %}
+                            <option value="{{ variant.id }}">{{ variant.product.name }} - {{ variant.value }} (Stock: {{ variant.stock }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; color: #8b949e; margin-bottom: 5px;">Quantity</label>
+                    <input type="number" name="quantity" min="1" value="1" required style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px;">
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" style="flex: 1; background: #238636; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">SUBMIT</button>
+                    <button type="button" onclick="toggleModal()" style="flex: 1; background: #30363d; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">CANCEL</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# Transaction Table #}
+    <div style="background-color: #161b22; border-radius: 12px; border: 1px solid #30363d; overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
             <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Customer</th>
-                    <th>Product Item (Category/Sub)</th>
-                    <th>Prev.</th>
-                    <th>Qty</th>
-                    <th>Bal.</th>
-                    <th class="text-center">Action</th> 
+                <tr style="background-color: #21262d; border-bottom: 2px solid #30363d;">
+                    <th style="padding: 18px; color: #ffffff; font-size: 0.8rem; text-transform: uppercase;">Date</th>
+                    <th style="padding: 18px; color: #ffffff; font-size: 0.8rem; text-transform: uppercase;">Customer</th>
+                    <th style="padding: 18px; color: #ffffff; font-size: 0.8rem; text-transform: uppercase;">Product Detail</th>
+                    <th style="padding: 18px; color: #ffffff; font-size: 0.8rem; text-transform: uppercase; text-align: center;">Qty</th>
+                    <th style="padding: 18px; color: #ffffff; font-size: 0.8rem; text-transform: uppercase; text-align: center;">Stock Bal</th>
+                    <th style="padding: 18px; color: #ffffff; font-size: 0.8rem; text-transform: uppercase; text-align: center;">Action</th>
                 </tr>
             </thead>
             <tbody>
-                {% for item in history %}
-                <tr class="align-middle">
-                    <td class="small">{{ item.createdAt|date('d M Y, h:i A') }}</td>
-                    <td><strong>{{ item.customerName }}</strong></td>
-                    <td>
-                        {# Category and Sub-category mapping #}
-                        <small class="text-info d-block" style="font-size: 10px; text-transform: uppercase;">
-                            {{ item.product.subCategory.category.name|default('General') }} / 
-                            {{ item.product.subCategory.name|default('Uncategorized') }}
-                        </small>
-                        
-                        {{ item.product.name }} 
-                        <span class="badge bg-light text-dark ms-1" style="font-size: 10px;">
-                            {{ item.variant.value }}
-                        </span>
+                {% for log in history %}
+                <tr style="border-bottom: 1px solid #21262d;">
+                    <td style="padding: 18px; color: #8b949e; font-size: 0.85rem;">{{ log.createdAt|date('d M Y, h:i A') }}</td>
+                    <td style="padding: 18px; color: #ffffff; font-weight: bold;">{{ log.customerName|default('Walking Customer') }}</td>
+                    <td style="padding: 18px;">
+                        <div style="color: #ffffff; font-size: 0.95rem;">{{ log.product.name }}</div>
+                        {% if log.variant %}
+                            <div style="color: #58a6ff; font-size: 0.75rem; font-weight: bold;">VARIANT: {{ log.variant.value }}</div>
+                        {% endif %}
                     </td>
-                    <td>{{ item.previousStock }}</td>
-                    <td><span class="badge bg-danger">{{ item.quantity }}</span></td>
-                    <td class="text-success fw-bold">{{ item.previousStock - item.quantity }}</td>
-                    <td class="text-center">
-                        <a href="{{ path('admin_purchase_receipt', {'id': item.id}) }}" 
-                           class="btn btn-sm btn-primary" 
-                           target="_blank"
-                           style="font-size: 11px; padding: 2px 8px;">
-                            <i class="fas fa-print"></i> Receipt
-                        </a>
+                    <td style="padding: 18px; text-align: center;">
+                        <span style="background: rgba(248, 81, 73, 0.1); color: #ff7b72; padding: 4px 10px; border-radius: 20px; font-weight: bold;">-{{ log.quantity }}</span>
                     </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="7" class="text-center">No transactions found.</td>
+                    <td style="padding: 18px; text-align: center; color: #3fb950; font-weight: bold;">{{ log.variant.stock|default(0) }}</td>
+                    <td style="padding: 18px; text-align: center;">
+                        <a href="{{ path('admin_purchase_receipt', {'id': log.id}) }}" target="_blank" style="color: #58a6ff; text-decoration: none; border: 1px solid #30363d; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem;">RECEIPT</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+function toggleModal() {
+    const modal = document.getElementById('purchaseModal');
+    modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'block' : 'none';
+}
+</script>

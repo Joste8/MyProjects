@@ -24,3 +24,46 @@
         {% endif %}
     </tbody>
 </table>
+
+
+<div style="background-color: #0d1117; min-height: 100vh; color: #c9d1d9; padding: 25px; font-family: sans-serif;">
+    
+    <div style="margin-bottom: 30px;">
+        <h2 style="color: white; margin: 0; font-weight: bold; letter-spacing: 1px;">RECENT TRANSACTIONS LOG</h2>
+    </div>
+
+    {% set items = entities|default(purchases)|default(stock_logs)|default(logs)|default(null) %}
+
+    {% if items is not null %}
+        <div style="background-color: #161b22; border-radius: 12px; border: 1px solid #30363d; overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="background-color: #21262d; border-bottom: 2px solid #30363d;">
+                        <th style="padding: 15px; color: #ffffff;">Date</th>
+                        <th style="padding: 15px; color: #ffffff;">Customer</th>
+                        <th style="padding: 15px; color: #ffffff;">Product</th>
+                        <th style="padding: 15px; color: #ffffff; text-align: center;">Sold</th>
+                        <th style="padding: 15px; color: #ffffff; text-align: center;">Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in items %}
+                    <tr style="border-bottom: 1px solid #21262d;">
+                        <td style="padding: 15px; color: #8b949e;">{{ log.createdAt|date('d M Y, h:i A') }}</td>
+                        <td style="padding: 15px; color: #ffffff; font-weight: bold;">{{ log.customer }}</td>
+                        <td style="padding: 15px; color: #58a6ff;">{{ log.product.name }}</td>
+                        <td style="padding: 15px; text-align: center; color: #ff7b72;">{{ log.purchasedQty }}</td>
+                        <td style="padding: 15px; text-align: center; color: #3fb950;">{{ log.balanceQty }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="background: #21262d; padding: 20px; border-radius: 8px; border: 1px solid #f85149; color: #f85149;">
+            <strong>Data Variable Error!</strong><br>
+           
+            <code>{{ dump(_context|keys) }}</code>
+        </div>
+    {% endif %}
+</div>

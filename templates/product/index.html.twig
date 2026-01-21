@@ -1,39 +1,66 @@
-{% extends 'base.html.twig' %}
+{# templates/admin/product/index.html.twig #}
+<div style="background-color: #0d1117; min-height: 100vh; color: #c9d1d9; padding: 20px; font-family: sans-serif;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: white; margin: 0;">Inventory Management</h2>
+        <a href="{{ path('admin_product_new') }}" style="background-color: #238636; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">+ Add Product</a>
+    </div>
 
-{% block title %}Product index{% endblock %}
-
-{% block body %}
-    <h1>Product index</h1>
-
-    <table class="table">
+    
+    <table style="width: 100%; border-collapse: collapse; background-color: #161b22; border-radius: 8px; overflow: hidden; border: 1px solid #30363d;">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Description</th>
-                <th>actions</th>
+            <tr style="background-color: #21262d; color: white; text-align: left;">
+                <th style="padding: 15px; border-bottom: 2px solid #30363d;">ID</th>
+                <th style="padding: 15px; border-bottom: 2px solid #30363d;">Product Information</th>
+                <th style="padding: 15px; border-bottom: 2px solid #30363d;">Category</th>
+                <th style="padding: 15px; border-bottom: 2px solid #30363d; text-align: center;">Price</th>
+                <th style="padding: 15px; border-bottom: 2px solid #30363d; text-align: center;">Stock Level</th>
+                <th style="padding: 15px; border-bottom: 2px solid #30363d; text-align: center;">Actions</th>
             </tr>
         </thead>
         <tbody>
-        {% for product in products %}
-            <tr>
-                <td>{{ product.id }}</td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.price }}</td>
-                <td>{{ product.description }}</td>
-                <td>
-                    <a href="{{ path('app_product_show', {'id': product.id}) }}">show</a>
-                    <a href="{{ path('app_product_edit', {'id': product.id}) }}">edit</a>
+            {% for product in products %}
+            <tr style="border-bottom: 1px solid #30363d;">
+                <td style="padding: 15px; color: #58a6ff; font-weight: bold;">#{{ product.id }}</td>
+                
+                <td style="padding: 15px;">
+                    <div style="color: #ff4444; font-size: 1.1rem; font-weight: 900; text-transform: uppercase;">{{ product.name }}</div>
+                    <small style="color: #8b949e;">REF: PROD-{{ product.id }}</small>
+                </td>
+
+                <td style="padding: 15px;">
+                    {% if product.subCategory %}
+                        <span style="color: #a5d6ff;">{{ product.subCategory.category.name }}</span>
+                        <span style="color: #8b949e;"> / </span>
+                        <span style="color: #79c0ff;">{{ product.subCategory.name }}</span>
+                    {% else %}
+                        <span style="color: #8b949e; font-style: italic;">General</span>
+                    {% endif %}
+                </td>
+
+                <td style="padding: 15px; text-align: center;">
+                    <span style="color: #f2cc60; font-weight: bold;">₹{{ product.price|number_format(2) }}</span>
+                </td>
+
+                <td style="padding: 15px; text-align: center;">
+                    {% if product.stock <= 0 %}
+                        <span style="background: #442326; color: #ff7b72; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem;">OUT OF STOCK</span>
+                    {% else %}
+                        <span style="background: #1a332d; color: #3fb950; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem;">IN STOCK ({{ product.stock }})</span>
+                    {% endif %}
+                </td>
+
+                <td style="padding: 15px; text-align: center;">
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <a href="{{ path('admin_product_edit', {'entityId': product.id}) }}" style="color: #58a6ff; text-decoration: none; border: 1px solid #30363d; padding: 5px 10px; border-radius: 4px;">Edit</a>
+                        <form method="post" action="{{ path('admin_product_delete', {'entityId': product.id}) }}" onsubmit="return confirm('Are you sure?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                            <button style="background: none; border: 1px solid #f85149; color: #f85149; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Delete</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
+            {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('app_product_new') }}">Create new</a>
-{% endblock %}
+</div>

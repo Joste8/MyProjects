@@ -1,91 +1,89 @@
 {# templates/admin/product/index.html.twig #}
-<div class="container-fluid py-4" style="background-color: #0b0e11; min-height: 100vh; color: #ffffff;">
-    
-    {# Header #}
-    <div class="d-flex justify-content-between align-items-center mb-4 px-3">
-        <h2 class="fw-bold text-white mb-0" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Inventory Management</h2>
-        <a href="{{ path('admin_product_new') }}" class="btn btn-success px-4 fw-bold shadow">
-            <i class="fas fa-plus me-2"></i>Add Product
-        </a>
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block main %}
+    <style>
+        .stock-badge { padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 0.85rem; }
+        .low-stock { background: #ffc107; color: #000; }
+        .in-stock { background: #28a745; color: #fff; }
+        .out-stock { background: #dc3545; color: #fff; }
+        .variant-tag { background: #333; color: #eee; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-right: 3px; border: 1px solid #444; }
+        .action-link { color: #448aff; text-decoration: none; font-size: 0.9rem; }
+        .action-link:hover { text-decoration: underline; }
+    </style>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Inventory Management</h3>
+        <a href="{{ ea_url().setController('App\\Controller\\Admin\\ProductCrudController').setAction('new') }}" class="btn btn-primary">Add Product</a>
     </div>
 
-    <div class="card border-0 shadow-lg" style="background-color: #161b22; border-radius: 12px; border: 1px solid #30363d !important;">
-        <div class="table-responsive">
-            <table class="table table-dark table-hover align-middle mb-0">
-                <thead>
-                    <tr style="border-bottom: 2px solid #444c56; background-color: #1c2128;">
-                        <th class="ps-4 py-3 text-info fw-bold" style="width: 80px;">ID</th>
-                        <th class="py-3 text-white fw-bold">Product Information</th>
-                        <th class="py-3 text-white fw-bold">Category</th>
-                        <th class="py-3 text-white fw-bold text-center">Price</th>
-                        <th class="py-3 text-white fw-bold text-center">Stock Status</th>
-                        <th class="pe-4 py-3 text-end text-white fw-bold">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in products %}
-                    <tr style="border-bottom: 1px solid #30363d;">
-                        {# ID - Blue & Bold #}
-                        <td class="ps-4 fw-bold fs-6" style="color: #58a6ff;">#{{ product.id }}</td>
-                        
-                        {# Product Name - Bright Red [User Requested] #}
-                        <td>
-                            <div class="fw-bolder fs-5" style="color: #ff4d4d; letter-spacing: 0.5px; text-shadow: 0px 0px 10px rgba(255, 77, 77, 0.2);">
-                                {{ product.name|upper }}
-                            </div>
-                            <div class="text-secondary fw-bold small" style="color: #8b949e !important;">REF: PROD-{{ product.id }}</div>
-                        </td>
+    <table class="table datagrid">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Product Name</th>
+                <th>Category / SubCategory</th>
+                <th>Price</th>
+                <th>Variants</th>
+                <th>Stock Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.name }}</td>
+                    <td class="text-muted">
+                        {% if product.subCategory %}
+                            {{ product.subCategory.category.name }} / {{ product.subCategory.name }}
+                        {% else %}
+                            Uncategorized
+                        {% endif %}
+                    </td>
+                    <td style="font-weight: bold;">₹{{ product.price|number_format(2) }}</td>
+                    <td>
+                        {# attributeValues എന്നത് നിങ്ങളുടെ എൻറിറ്റിയിലെ റിലേഷൻ ആണ് #}
+                        {% for attr in product.attributeValues %}
+                            <span class="variant-tag">{{ attr.value }}</span>
+                        {% else %}
+                            <span class="text-muted small">None</span>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <span class="stock-badge {% if product.stock <= 0 %}out-stock{% elseif product.stock <= 5 %}low-stock{% else %}in-stock{% endif %}">
+                            {{ product.stock }} Units
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ ea_url().setController('App\\Controller\\Admin\\ProductCrudController').setAction('edit').setEntityId(product.id) }}" class="action-link">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-                        {# Category Path - Cyan Blue #}
-                        <td>
-                            {% if product.subCategory %}
-                                <span class="fw-bold" style="color: #79c0ff;">{{ product.subCategory.category.name }}</span>
-                                <span class="mx-1 text-muted">/</span>
-                                <span class="fw-bold" style="color: #a5d6ff;">{{ product.subCategory.name }}</span>
-                            {% else %}
-                                <span class="text-muted opacity-50 fst-italic">General</span>
-                            {% endif %}
-                        </td>
+    <hr style="border-color: #444; margin: 40px 0;">
 
-                        {# Price - Vivid Yellow #}
-                        <td class="text-center">
-                            <span class="fw-bolder fs-5" style="color: #ffca28 !important;">₹{{ product.price|number_format(2) }}</span>
-                        </td>
-
-                        {# Stock Status - Contrast Badges #}
-                        <td class="text-center">
-                            {% if product.stock <= 0 %}
-                                <span class="badge w-100 py-2 border border-danger fw-bolder" style="background-color: #442326; color: #ff7b72; font-size: 11px;">OUT OF STOCK</span>
-                            {% elseif product.stock < 10 %}
-                                <span class="badge w-100 py-2 border border-warning fw-bolder" style="background-color: #453517; color: #d29922; font-size: 11px;">LOW STOCK ({{ product.stock }})</span>
-                            {% else %}
-                                <span class="badge w-100 py-2 border border-success fw-bolder" style="background-color: #1a332d; color: #3fb950; font-size: 11px;">IN STOCK ({{ product.stock }})</span>
-                            {% endif %}
-                        </td>
-
-                        <td class="pe-4 text-end">
-                            <a href="{{ path('admin_product_edit', {'entityId': product.id}) }}" class="btn btn-sm btn-outline-light fw-bold px-3 shadow-sm">
-                                <i class="fas fa-edit me-1 text-info"></i>EDIT
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<style>
-    /* High Contrast Hover Effect */
-    .table-hover tbody tr:hover { 
-        background-color: #1f242c !important; 
-        transition: 0.2s ease-in-out;
-    }
-    .fw-bolder { font-weight: 800 !important; }
-    
-    /* Smooth Scrollbar */
-    ::-webkit-scrollbar { width: 10px; }
-    ::-webkit-scrollbar-track { background: #0b0e11; }
-    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 5px; }
-</style>
+    <h3>Activity History Log</h3>
+    <table class="table" style="background: #111; color: white;">
+        <thead>
+            <tr>
+                <th>Date & Time</th>
+                <th>Description</th>
+                <th>User</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in history %}
+                <tr>
+                    <td style="color: #8b949e;">{{ log.createdAt|date('d M Y, h:i A') }}</td>
+                    <td>{{ log.description|default('Stock Updated') }}</td>
+                    <td>{{ log.user|default('Admin') }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="3" class="text-center">No history logs found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
