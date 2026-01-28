@@ -1,8 +1,47 @@
-{% for variant in field.value %}
-    {% for attrValue in variant.attributeValues %}
-        <span class="badge badge-info">
-            {{ attrValue.attribute.name }}: {{ attrValue.value }}
-        </span>
-    {% endfor %}
-    <br>
-{% endfor %}
+{# templates/admin/dashboard.html.twig #}
+
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block main %}
+    <div class="container-fluid mt-3">
+        <h2 class="mb-4">Inventory Overview</h2>
+        
+        <table class="table table-striped table-hover shadow-sm">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Product Name</th>
+                    <th>Category (Main)</th> {# Ithu "Men's Wear" kaanikkum #}
+                    <th>Sub Category</th>      {# Ithu "Shirts" kaanikkum #}
+                    <th>Price</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td class="font-weight-bold">{{ product.name }}</td>
+                        
+                        {# Entity relationship vazhi Parent Category (Men's Wear) fetch cheyyunnu #}
+                        <td>
+                            {% if product.subCategory and product.subCategory.parent %}
+                                {{ product.subCategory.parent.name }}
+                            {% else %}
+                                <span class="badge badge-secondary">Main Category</span>
+                            {% endif %}
+                        </td>
+                        
+                        {# Direct Sub-category (Shirts) #}
+                        <td>{{ product.subCategory ? product.subCategory.name : 'N/A' }}</td>
+                        
+                        <td>{{ product.price }}</td>
+                        <td>{{ product.stock }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No products found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

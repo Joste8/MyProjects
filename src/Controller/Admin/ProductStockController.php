@@ -35,7 +35,7 @@ class ProductStockController extends AbstractController
             ]);
         }
 
-        // 🔥 Example: simple stock field
+
         $product->setStock(
             $product->getStock() - $qty
         );

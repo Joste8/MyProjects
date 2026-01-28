@@ -1,11 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Category{% endblock %}
-
 {% block body %}
-    <h1>Create new Category</h1>
+<div class="container mt-4">
+    <h1>Edit Category</h1>
 
-    {{ include('category/_form.html.twig') }}
-
-    <a href="{{ path('app_category_index') }}">back to list</a>
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div class="mt-4">
+            <button type="submit" class="btn btn-info">Update Category</button>
+            <a href="{{path('app_category_index') }}" class="btn btn-secondary">Back to List</a>
+        </div>
+    {{ form_end(form) }}
+</div>
 {% endblock %}

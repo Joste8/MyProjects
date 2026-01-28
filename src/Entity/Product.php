@@ -2,124 +2,128 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 150)]
+    #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'float', nullable: true)]
-    private ?float $price = null;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    private ?string $price = null;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column]
     private ?int $stock = null;
 
     #[ORM\ManyToOne(targetEntity: SubCategory::class)]
-    #[ORM\JoinColumn(nullable: true)] 
     private ?SubCategory $subCategory = null;
 
-    #[ORM\OneToMany(
-        mappedBy: 'product',
-        targetEntity: ProductAttributeValue::class,
-        cascade: ['persist', 'remove'],
-        orphanRemoval: true
-    )]
-    private Collection $attributeValues;
+    
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductVariant::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $variants;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $status = 'Active';
 
     public function __construct()
     {
-        $this->attributeValues = new ArrayCollection();
-        $this->stock = 0;
+        $this->variants = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
+    public function getId(): ?int { return $this->id; }
+
+    public function getName(): ?string { return $this->name; }
+
+    public function setName(string $name): self 
+    { 
+        $this->name = $name; 
+        return $this; 
     }
 
-    public function getName(): ?string
-    {
-        return $this->name;
+    public function getPrice(): ?string { return $this->price; }
+
+    public function setPrice(string $price): self 
+    { 
+        $this->price = $price; 
+        return $this; 
     }
 
-    public function setName(?string $name): self
-    {
-        $this->name = $name;
-        return $this;
+    public function getStock(): ?int { return $this->stock; }
+
+    public function setStock(int $stock): self 
+    { 
+        $this->stock = $stock; 
+        return $this; 
     }
 
-    public function getPrice(): ?float
-    {
-        return $this->price;
+    public function getSubCategory(): ?SubCategory { return $this->subCategory; }
+
+    public function setSubCategory(?SubCategory $subCategory): self 
+    { 
+        $this->subCategory = $subCategory; 
+        return $this; 
     }
 
-    public function setPrice(?float $price): self
-    {
-        $this->price = $price;
-        return $this;
-    }
+    public function getStatus(): ?string { return $this->status; }
 
-    public function getStock(): ?int
-    {
-        return $this->stock;
-    }
-
-    public function setStock(?int $stock): self
-    {
-        $this->stock = $stock;
-        return $this;
-    }
-
-    // SubCategory Getter & Setter
-    public function getSubCategory(): ?SubCategory
-    {
-        return $this->subCategory;
-    }
-
-    public function setSubCategory(?SubCategory $subCategory): self
-    {
-        $this->subCategory = $subCategory;
-        return $this;
+    public function setStatus(?string $status): self 
+    { 
+        $this->status = $status; 
+        return $this; 
     }
 
     /**
-     * @return Collection<int, ProductAttributeValue>
+     * @return Collection<int, ProductVariant>
      */
-    public function getAttributeValues(): Collection
+    public function getVariants(): Collection
     {
-        return $this->attributeValues;
+        return $this->variants;
     }
 
-    public function addAttributeValue(ProductAttributeValue $value): self
+    public function addVariant(ProductVariant $variant): self
     {
-        if (!$this->attributeValues->contains($value)) {
-            $this->attributeValues->add($value);
-            $value->setProduct($this);
+        if (!$this->variants->contains($variant)) {
+            $this->variants->add($variant);
+            $variant->setProduct($this);
         }
         return $this;
     }
 
-    public function removeAttributeValue(ProductAttributeValue $value): self
+    public function removeVariant(ProductVariant $variant): self
     {
-        if ($this->attributeValues->removeElement($value)) {
-            if ($value->getProduct() === $this) {
-                $value->setProduct(null);
+        if ($this->variants->removeElement($variant)) {
+            if ($variant->getProduct() === $this) {
+                $variant->setProduct(null);
             }
         }
         return $this;
     }
 
-    public function __toString(): string
-    {
-        return $this->name ?? '';
+    public function __toString(): string 
+    { 
+        return $this->name ?? ''; 
     }
+    public function getVariantDetails(): string
+{
+    if ($this->variants->isEmpty()) {
+        return 'No Variants';
+    }
+
+    $details = [];
+    foreach ($this->variants as $variant) {
+      
+        $details[] = sprintf('%s: %s (Stock: %d)', $variant->getName(), $variant->getValue(), $variant->getStock());
+    }
+
+    return implode(', ', $details);
+}
 }

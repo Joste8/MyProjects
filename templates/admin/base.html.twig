@@ -1,11 +1,12 @@
-<ul class="nav">
+<ul class="nav flex-column">
     <li class="nav-item">
-        <a class="nav-link" href="{{ path('app_product_index') }}">Inventory</a>
+        <a class="nav-link text-white" href="{{ path('app_product_index') }}">
+            <i class="fa fa-box"></i> Inventory
+        </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="{{ path('app_category_index') }}">Manage Categories</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ path('app_sub_category_index') }}">Manage Sub-Categories</a>
+        <a class="nav-link text-white" href="{{ path('app_category_index') }}">
+            <i class="fas fa-tags"></i> Category Module
+        </a>
     </li>
 </ul>

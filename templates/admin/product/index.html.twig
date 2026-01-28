@@ -1,89 +1,21 @@
-{# templates/admin/product/index.html.twig #}
-{% extends '@EasyAdmin/page/content.html.twig' %}
-
-{% block main %}
-    <style>
-        .stock-badge { padding: 5px 10px; border-radius: 15px; font-weight: bold; font-size: 0.85rem; }
-        .low-stock { background: #ffc107; color: #000; }
-        .in-stock { background: #28a745; color: #fff; }
-        .out-stock { background: #dc3545; color: #fff; }
-        .variant-tag { background: #333; color: #eee; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-right: 3px; border: 1px solid #444; }
-        .action-link { color: #448aff; text-decoration: none; font-size: 0.9rem; }
-        .action-link:hover { text-decoration: underline; }
-    </style>
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Inventory Management</h3>
-        <a href="{{ ea_url().setController('App\\Controller\\Admin\\ProductCrudController').setAction('new') }}" class="btn btn-primary">Add Product</a>
-    </div>
-
-    <table class="table datagrid">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Product Name</th>
-                <th>Category / SubCategory</th>
-                <th>Price</th>
-                <th>Variants</th>
-                <th>Stock Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in products %}
-                <tr>
-                    <td>{{ product.id }}</td>
-                    <td>{{ product.name }}</td>
-                    <td class="text-muted">
-                        {% if product.subCategory %}
-                            {{ product.subCategory.category.name }} / {{ product.subCategory.name }}
-                        {% else %}
-                            Uncategorized
-                        {% endif %}
-                    </td>
-                    <td style="font-weight: bold;">₹{{ product.price|number_format(2) }}</td>
-                    <td>
-                        {# attributeValues എന്നത് നിങ്ങളുടെ എൻറിറ്റിയിലെ റിലേഷൻ ആണ് #}
-                        {% for attr in product.attributeValues %}
-                            <span class="variant-tag">{{ attr.value }}</span>
-                        {% else %}
-                            <span class="text-muted small">None</span>
-                        {% endfor %}
-                    </td>
-                    <td>
-                        <span class="stock-badge {% if product.stock <= 0 %}out-stock{% elseif product.stock <= 5 %}low-stock{% else %}in-stock{% endif %}">
-                            {{ product.stock }} Units
-                        </span>
-                    </td>
-                    <td>
-                        <a href="{{ ea_url().setController('App\\Controller\\Admin\\ProductCrudController').setAction('edit').setEntityId(product.id) }}" class="action-link">Edit</a>
-                    </td>
-                </tr>
+{# Variants Column - ഇവിടെയാണ് വേരിയന്റ് വാല്യൂസ് വരുന്നത് #}
+<td>
+    {% if product.variants is not empty %}
+        <div class="d-flex flex-wrap gap-1">
+            {% for variant in product.variants %}
+                <span class="badge border border-secondary text-light">
+                    {{ variant.name }} ({{ variant.stock }})
+                </span>
             {% endfor %}
-        </tbody>
-    </table>
+        </div>
+    {% else %}
+        <span class="text-muted small">None</span>
+    {% endif %}
+</td>
 
-    <hr style="border-color: #444; margin: 40px 0;">
-
-    <h3>Activity History Log</h3>
-    <table class="table" style="background: #111; color: white;">
-        <thead>
-            <tr>
-                <th>Date & Time</th>
-                <th>Description</th>
-                <th>User</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for log in history %}
-                <tr>
-                    <td style="color: #8b949e;">{{ log.createdAt|date('d M Y, h:i A') }}</td>
-                    <td>{{ log.description|default('Stock Updated') }}</td>
-                    <td>{{ log.user|default('Admin') }}</td>
-                </tr>
-            {% else %}
-                <tr><td colspan="3" class="text-center">No history logs found.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% endblock %}
+{# Action Column - പുതിയ വാല്യൂ ആഡ് ചെയ്യാനുള്ള ബട്ടൺ #}
+<td>
+    <a href="{{ path('admin_product_variant_new', {'product_id': product.id}) }}" class="btn btn-sm btn-warning text-dark fw-bold">
+        + Variant Value
+    </a>
+</td>

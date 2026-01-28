@@ -3,13 +3,90 @@
 {% block content_title %}Dashboard Summary{% endblock %}
 
 {% block main %}
-    <div class="row">
+    {# 1. Notification Section #}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            {% if notifications is defined and notifications|length > 0 %}
+                <div class="card shadow-sm border-0" style="background-color: #1a1a1a; color: #fff;">
+                    <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 text-warning"><i class="fas fa-bell mr-2"></i> Recent Notifications</h6>
+                        <span class="badge badge-pill badge-danger">{{ notifications|length }} New</span>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for n in notifications %}
+                            <li class="list-group-item bg-transparent border-secondary d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-exclamation-triangle text-danger mr-2"></i>
+                                    {{ n.message }}
+                                </div>
+                                <small class="text-muted">{{ n.createdAt|date('d M, H:i') }}</small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {# 2. Summary Cards #}
+    <div class="row mb-4">
         <div class="col-md-4">
-            <div class="card bg-primary text-white p-3 shadow-sm">
+            <div class="card bg-primary text-white p-3 shadow-sm border-0">
                 <h5>Total Products</h5>
-                <h2>{{ products|length }}</h2>
+                {# Controller-il ninnu 'totalProducts' variable pass cheyyunnathaanu nallathu #}
+                <h2>{{ totalProducts|default(products|length) }}</h2>
             </div>
         </div>
         
+        {# Low Stock items undenkil athinu oru card koodi add cheyyam #}
+        {% if lowStock is defined and lowStock|length > 0 %}
+        <div class="col-md-4">
+            <div class="card bg-danger text-white p-3 shadow-sm border-0">
+                <h5>Low Stock Items</h5>
+                <h2>{{ lowStock|length }}</h2>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {# 3. Recent Products Table #}
+    <div class="card shadow-sm p-3 border-0" style="background-color: #1a1a1a; color: #fff;">
+        <h4 class="mb-3">Recent Products</h4>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead>
+                    <tr class="text-muted">
+                        <th>Product Name</th>
+                        <th>Category (Main)</th>
+                        <th>Sub Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td class="font-weight-bold">{{ product.name }}</td>
+                            <td>
+                                {% if product.subCategory and product.subCategory.category %}
+                                    <span class="badge badge-secondary">{{ product.subCategory.category.name }}</span>
+                                {% else %}
+                                    <span class="text-muted">No Category</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ product.subCategory ? product.subCategory.name : 'N/A' }}</td>
+                            <td class="text-success">₹ {{ product.price }}</td>
+                            <td>
+                                <span class="badge {{ product.stock < 5 ? 'badge-danger' : 'badge-info' }}">
+                                    {{ product.stock }}
+                                </span>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="5" class="text-center text-muted">No products found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}

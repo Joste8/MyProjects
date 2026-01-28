@@ -3,11 +3,38 @@
 {% block title %}Edit Category{% endblock %}
 
 {% block body %}
-    <h1>Edit Category</h1>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header border-bottom border-secondary">
+                <h3 class="card-title mb-0 text-info">Edit Category</h3>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Category Name</label>
+                        {{ form_widget(form.name) }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Parent Category</label>
+                        {{ form_widget(form.parent) }}
+                        <small class="text-secondary">Change the parent category if you want to move this category.</small>
+                    </div>
 
-    {{ include('category/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_category_index') }}">back to list</a>
-
-    {{ include('category/_delete_form.html.twig') }}
+                    <div class="d-flex justify-content-between mt-4">
+                        
+                       {# 11-amatthe line-il 'list' maatti 'index' aakkuka #}
+<a href="{{ path('app_category_index') }}" class="btn btn-secondary">Back to List</a>
+   
+                        
+                        <button type="submit" class="btn btn-info">
+                            Update Category
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

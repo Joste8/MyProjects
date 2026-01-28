@@ -47,7 +47,6 @@ class UserCrudController extends AbstractCrudController
             return;
         }
 
-        // PASSWORD HASH ചെയ്യുന്നു
         $entityInstance->setPassword(
             $this->passwordHasher->hashPassword(
                 $entityInstance,

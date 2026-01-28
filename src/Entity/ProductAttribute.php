@@ -30,14 +30,14 @@ class ProductAttribute
         $this->values = new ArrayCollection();
     }
 
-    // ================= ID =================
+    
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    // ================= NAME =================
+
 
     public function getName(): ?string
     {
@@ -50,7 +50,7 @@ class ProductAttribute
         return $this;
     }
 
-    // ================= VALUES =================
+    
 
     /**
      * @return Collection<int, ProductAttributeValue>

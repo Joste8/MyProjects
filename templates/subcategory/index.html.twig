@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 font-weight-bold">Subcategory List</h5>
+            <a href="{{ path('app_subcategory_new') }}" class="btn btn-primary btn-sm px-4">Create New</a>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Subcategory Name</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for item in subcategories %}
+                    <tr>
+                        <td class="ps-4 align-middle">#{{ item.id }}</td>
+                        <td class="align-middle font-weight-bold">{{ item.name }}</td>
+                        <td class="text-center">
+                            <a href="{{ path('app_subcategory_edit', {'id': item.id}) }}" class="btn btn-sm btn-info text-white me-2">Edit</a>
+                            
+                            <form method="post" action="{{ path('app_subcategory_delete', {'id': item.id}) }}" style="display:inline-block;" onsubmit="return confirm('Are you sure?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ item.id) }}">
+                                <button class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center py-5">No subcategories found.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

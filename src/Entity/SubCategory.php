@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
+use App\Repository\SubCategoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: SubCategoryRepository::class)]
 class SubCategory
 {
     #[ORM\Id]
@@ -15,14 +16,26 @@ class SubCategory
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'subCategories')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Category::class)]
     private ?Category $category = null;
 
     public function getId(): ?int { return $this->id; }
+
     public function getName(): ?string { return $this->name; }
-    public function setName(string $name): self { $this->name = $name; return $this; }
+
+    public function setName(string $name): self 
+    { 
+        $this->name = $name; 
+        return $this; 
+    }
+
     public function getCategory(): ?Category { return $this->category; }
-    public function setCategory(?Category $category): self { $this->category = $category; return $this; }
-    public function __toString(): string { return $this->name; }
+
+    public function setCategory(?Category $category): self 
+    { 
+        $this->category = $category; 
+        return $this; 
+    }
+
+    public function __toString(): string { return $this->name ?? ''; }
 }

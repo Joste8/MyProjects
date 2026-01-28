@@ -26,7 +26,7 @@ class ProductAttributeValue
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?ProductAttribute $attribute = null;
 
-    // ================= GETTERS / SETTERS =================
+    
 
     public function getId(): ?int
     {

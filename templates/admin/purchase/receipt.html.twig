@@ -1,0 +1,24 @@
+{# templates/admin/purchase/receipt.html.twig #}
+<div style="max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; font-family: sans-serif; background: #fff; color: #000;">
+    <h2 style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px;">PURCHASE RECEIPT</h2>
+    
+    <div style="margin-top: 20px;">
+        <p><strong>Date:</strong> {{ purchase.purchasedAt|date('d-m-Y H:i') }}</p>
+        <p><strong>Customer:</strong> {{ purchase.customerName }}</p>
+        <hr>
+        <p><strong>Item:</strong> {{ purchase.itemName }}</p>
+        {% if purchase.productVariant %}
+            <p><strong>Variant:</strong> {{ purchase.productVariant.value }}</p>
+        {% endif %}
+        <p><strong>Quantity:</strong> {{ purchase.quantity }}</p>
+        <p><strong>Price:</strong> ₹{{ purchase.price }}</p>
+        <hr>
+        <h3 style="text-align: right;">Total: ₹{{ purchase.price * purchase.quantity }}</h3>
+    </div>
+
+    <div style="margin-top: 30px; text-align: center;">
+        <button onclick="window.print()" style="padding: 10px 20px; cursor: pointer;">Print Receipt</button>
+        <br><br>
+        <a href="{{ path('admin_purchase') }}" style="text-decoration: none; color: blue;">← Back to Log</a>
+    </div>
+</div>

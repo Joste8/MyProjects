@@ -2,7 +2,10 @@
 
 namespace App\Entity;
 
-#[ORM\Entity]
+use App\Repository\ProductVariantRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: ProductVariantRepository::class)]
 class ProductVariant
 {
     #[ORM\Id]
@@ -10,41 +13,36 @@ class ProductVariant
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'variants')]
+    #[ORM\Column(length: 255)]
+    private ?string $name = null; 
+
+    #[ORM\Column(length: 255)]
+    private ?string $value = null; 
+
+    #[ORM\Column]
+    private int $stock = 0; 
+
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'variants')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
-    #[ORM\ManyToMany(targetEntity: ProductAttributeValue::class)]
-    #[ORM\JoinTable(name: 'product_variant_attribute_values')]
-    private Collection $attributeValues;
+    public function getId(): ?int { return $this->id; }
 
-    #[ORM\Column(type: 'integer')]
-    private int $stock = 0;
+    public function getName(): ?string { return $this->name; }
+    public function setName(string $name): self { $this->name = $name; return $this; }
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private string $price;
+    public function getValue(): ?string { return $this->value; }
+    public function setValue(string $value): self { $this->value = $value; return $this; }
 
-    public function __construct()
+    public function getStock(): int { return $this->stock; }
+    public function setStock(int $stock): self { $this->stock = $stock; return $this; }
+
+    public function getProduct(): ?Product { return $this->product; }
+    public function setProduct(?Product $product): self { $this->product = $product; return $this; }
+
+    
+    public function __toString(): string
     {
-        $this->attributeValues = new ArrayCollection();
-    }
-
-    public function getAttributeValues(): Collection
-    {
-        return $this->attributeValues;
-    }
-
-    public function addAttributeValue(ProductAttributeValue $value): self
-    {
-        if (!$this->attributeValues->contains($value)) {
-            $this->attributeValues->add($value);
-        }
-        return $this;
-    }
-
-    public function removeAttributeValue(ProductAttributeValue $value): self
-    {
-        $this->attributeValues->removeElement($value);
-        return $this;
+        return $this->name . ': ' . $this->value;
     }
 }

@@ -2,7 +2,7 @@
 
 <div style="background-color: #0d1117; min-height: 100vh; color: #c9d1d9; padding: 25px; font-family: sans-serif;">
     
-    {# Flash Messages for Success/Error #}
+    {# Flash Messages #}
     {% for label, messages in app.flashes %}
         {% for message in messages %}
             <div style="padding: 15px; margin-bottom: 20px; border-radius: 6px; background: {% if label == 'success' %}#238636{% else %}#da3633{% endif %}; color: white; font-weight: bold;">
@@ -16,11 +16,10 @@
             <h2 style="color: white; margin: 0; font-weight: bold; letter-spacing: 1px;">RECENT TRANSACTIONS LOG</h2>
             <p style="color: #8b949e; margin-top: 5px; font-size: 0.9rem;">Track all customer purchases and stock movements.</p>
         </div>
-     
         <button onclick="toggleModal()" style="background-color: #238636; color: white; padding: 10px 20px; border-radius: 6px; border:none; cursor:pointer; font-weight: bold; font-size: 0.85rem;">+ NEW TRANSACTION</button>
     </div>
 
-    {# --- Purchase Modal (Popup Form) --- #}
+    {# --- Purchase Modal --- #}
     <div id="purchaseModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8);">
         <div style="background-color: #161b22; margin: 10% auto; padding: 30px; border: 1px solid #30363d; width: 400px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
             <h3 style="color: white; margin-top: 0;">Record New Sale</h3>
@@ -68,20 +67,22 @@
             <tbody>
                 {% for log in history %}
                 <tr style="border-bottom: 1px solid #21262d;">
-                    <td style="padding: 18px; color: #8b949e; font-size: 0.85rem;">{{ log.createdAt|date('d M Y, h:i A') }}</td>
+                    <td style="padding: 18px; color: #8b949e; font-size: 0.85rem;">{{ log.purchasedAt|date('d M Y, h:i A') }}</td>
                     <td style="padding: 18px; color: #ffffff; font-weight: bold;">{{ log.customerName|default('Walking Customer') }}</td>
                     <td style="padding: 18px;">
-                        <div style="color: #ffffff; font-size: 0.95rem;">{{ log.product.name }}</div>
-                        {% if log.variant %}
-                            <div style="color: #58a6ff; font-size: 0.75rem; font-weight: bold;">VARIANT: {{ log.variant.value }}</div>
+                        <div style="color: #ffffff; font-size: 0.95rem;">{{ log.itemName }}</div>
+                        {% if log.productVariant %}
+                            <div style="color: #5ba6ff; font-size: 0.75rem; font-weight: bold;">VARIANT: {{ log.productVariant.value }}</div>
                         {% endif %}
                     </td>
                     <td style="padding: 18px; text-align: center;">
                         <span style="background: rgba(248, 81, 73, 0.1); color: #ff7b72; padding: 4px 10px; border-radius: 20px; font-weight: bold;">-{{ log.quantity }}</span>
                     </td>
-                    <td style="padding: 18px; text-align: center; color: #3fb950; font-weight: bold;">{{ log.variant.stock|default(0) }}</td>
+                    <td style="padding: 18px; text-align: center; color: #3fb950; font-weight: bold;">
+                        {{ log.productVariant.stock|default(0) }}
+                    </td>
                     <td style="padding: 18px; text-align: center;">
-                        <a href="{{ path('admin_purchase_receipt', {'id': log.id}) }}" target="_blank" style="color: #58a6ff; text-decoration: none; border: 1px solid #30363d; padding: 6px 12px; border-radius: 6px; font-size: 0.75rem;">RECEIPT</a>
+                        <a href="{{ path('admin_purchase_receipt', {'id': log.id}) }}" style="color: #58a6ff; text-decoration: none; border: 1px solid #30363d; padding: 5px 12px; border-radius: 6px; font-size: 0.8rem;">VIEW RECEIPT</a>
                     </td>
                 </tr>
                 {% endfor %}

@@ -23,7 +23,7 @@ class ProductAttributeValueType extends AbstractType
                 'placeholder' => 'Select Attribute',
                 'label' => 'Attribute Name (e.g., Color)'
             ])
-            // ഇവിടെ 'attributeValue' എന്നതിന് പകരം 'value' എന്ന് തന്നെ വേണം
+            
             ->add('value', TextType::class, [
                 'label' => 'Value (e.g., Red)'
             ])

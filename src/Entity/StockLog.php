@@ -12,12 +12,12 @@ class StockLog
     #[ORM\Column]
     private ?int $id = null;
 
-    // 🔹 Product relation
+    
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
-    // 🔹 Variant relation
+    
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?ProductAttributeValue $variant = null;
@@ -34,7 +34,7 @@ class StockLog
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    /* ================= GETTERS & SETTERS ================= */
+    
 
     public function getId(): ?int
     {
