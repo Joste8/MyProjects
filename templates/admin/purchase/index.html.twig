@@ -24,9 +24,16 @@
         <div style="background-color: #161b22; margin: 10% auto; padding: 30px; border: 1px solid #30363d; width: 400px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
             <h3 style="color: white; margin-top: 0;">Record New Sale</h3>
             <form action="{{ path('admin_purchase_process') }}" method="POST">
+                
+                {# --- Updated: Customer Dropdown --- #}
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; color: #8b949e; margin-bottom: 5px;">Customer Name</label>
-                    <input type="text" name="customer_name" placeholder="Enter name" required style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px;">
+                    <label style="display: block; color: #8b949e; margin-bottom: 5px;">Select Customer</label>
+                    <select name="customer_id" required style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px;">
+                        <option value="">-- Choose Customer --</option>
+                        {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.name }} ({{ customer.email }})</option>
+                        {% endfor %}
+                    </select>
                 </div>
 
                 <div style="margin-bottom: 15px;">
@@ -68,7 +75,10 @@
                 {% for log in history %}
                 <tr style="border-bottom: 1px solid #21262d;">
                     <td style="padding: 18px; color: #8b949e; font-size: 0.85rem;">{{ log.purchasedAt|date('d M Y, h:i A') }}</td>
-                    <td style="padding: 18px; color: #ffffff; font-weight: bold;">{{ log.customerName|default('Walking Customer') }}</td>
+                    {# --- Displaying Customer Name from Relationship --- #}
+                    <td style="padding: 18px; color: #ffffff; font-weight: bold;">
+                        {{ log.customer.name|default('Walking Customer') }}
+                    </td>
                     <td style="padding: 18px;">
                         <div style="color: #ffffff; font-size: 0.95rem;">{{ log.itemName }}</div>
                         {% if log.productVariant %}

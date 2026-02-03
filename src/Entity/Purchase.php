@@ -29,18 +29,7 @@ class Purchase
     private ?string $customerName = null;
 
     #[ORM\ManyToOne(targetEntity: ProductVariant::class)]
-private ?ProductVariant $productVariant = null;
-
-public function getProductVariant(): ?ProductVariant
-{
-    return $this->productVariant;
-}
-
-public function setProductVariant(?ProductVariant $productVariant): self
-{
-    $this->productVariant = $productVariant;
-    return $this;
-}
+    private ?ProductVariant $productVariant = null;
 
     public function getId(): ?int
     {
@@ -55,7 +44,6 @@ public function setProductVariant(?ProductVariant $productVariant): self
     public function setItemName(string $itemName): static
     {
         $this->itemName = $itemName;
-
         return $this;
     }
 
@@ -67,7 +55,6 @@ public function setProductVariant(?ProductVariant $productVariant): self
     public function setPrice(float $price): static
     {
         $this->price = $price;
-
         return $this;
     }
 
@@ -79,7 +66,6 @@ public function setProductVariant(?ProductVariant $productVariant): self
     public function setQuantity(int $quantity): static
     {
         $this->quantity = $quantity;
-
         return $this;
     }
 
@@ -91,7 +77,6 @@ public function setProductVariant(?ProductVariant $productVariant): self
     public function setPurchasedAt(\DateTimeImmutable $purchasedAt): static
     {
         $this->purchasedAt = $purchasedAt;
-
         return $this;
     }
 
@@ -103,7 +88,17 @@ public function setProductVariant(?ProductVariant $productVariant): self
     public function setCustomerName(string $customerName): static
     {
         $this->customerName = $customerName;
+        return $this;
+    }
 
+    public function getProductVariant(): ?ProductVariant
+    {
+        return $this->productVariant;
+    }
+
+    public function setProductVariant(?ProductVariant $productVariant): self
+    {
+        $this->productVariant = $productVariant;
         return $this;
     }
 }

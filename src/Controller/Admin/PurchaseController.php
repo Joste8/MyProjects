@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Purchase;
 use App\Entity\ProductVariant;
+use App\Entity\Customer; 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,10 +18,12 @@ class PurchaseController extends AbstractController
     {
         $history = $entityManager->getRepository(Purchase::class)->findAll();
         $variants = $entityManager->getRepository(ProductVariant::class)->findAll();
+        $customers = $entityManager->getRepository(Customer::class)->findAll();
 
         return $this->render('admin/purchase/index.html.twig', [
-            'history'  => $history,
-            'variants' => $variants,
+            'history'   => $history,
+            'variants'  => $variants,
+            'customers' => $customers,
         ]);
     }
 
@@ -28,34 +31,37 @@ class PurchaseController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $variantId = $request->request->get('variant_id');
-        $customerName = $request->request->get('customer_name');
+        $customerId = $request->request->get('customer_id'); 
         $quantity = (int) $request->request->get('quantity');
 
         $variant = $entityManager->getRepository(ProductVariant::class)->find($variantId);
+        $customer = $entityManager->getRepository(Customer::class)->find($customerId);
 
-        if (!$variant) {
-            $this->addFlash('danger', 'Product not found!');
+        
+        if (!$variant || !$customer) {
+            $this->addFlash('danger', 'Product or Customer not found!');
             return $this->redirectToRoute('admin_purchase');
         }
 
+        
         if ($variant->getStock() < $quantity) {
             $this->addFlash('danger', 'Insufficient stock!');
             return $this->redirectToRoute('admin_purchase');
         }
 
+        
         $sale = new Purchase();
         $sale->setItemName($variant->getProduct()->getName());
-        $sale->setCustomerName($customerName);
+        $sale->setCustomerName($customer->getName()); 
         $sale->setQuantity($quantity);
         $sale->setPrice($variant->getProduct()->getPrice());
         $sale->setProductVariant($variant);
         $sale->setPurchasedAt(new \DateTimeImmutable());
 
-
+        
         $variant->setStock($variant->getStock() - $quantity);
 
         $entityManager->persist($sale);
-        $entityManager->persist($variant);
         $entityManager->flush();
 
         $this->addFlash('success', 'Purchase recorded successfully!');
