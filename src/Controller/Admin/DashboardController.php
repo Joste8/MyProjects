@@ -76,5 +76,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToRoute('Purchase Module', 'fa fa-shopping-cart', 'admin_purchase');
         yield MenuItem::linkToRoute('Category Module', 'fas fa-tags', 'app_category_index');
         yield MenuItem::linkToRoute('SubCategory Module', 'fas fa-tags', 'app_subcategory_index');
+        yield MenuItem::linkToRoute('Customer Module', 'fas fa-User', 'app_customer_index');
+
     }
 }
