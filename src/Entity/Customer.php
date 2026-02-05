@@ -19,19 +19,24 @@ class Customer
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(length: 20, nullable: true)] 
     private ?string $phone = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $address = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\OneToMany(targetEntity: Purchase::class, mappedBy: 'customer', orphanRemoval: true)]
+    #[ORM\OneToMany(
+        targetEntity: Purchase::class, 
+        mappedBy: 'customer', 
+        orphanRemoval: true, 
+        cascade: ['persist']
+    )]
     private Collection $purchases;
 
     public function __construct()
@@ -40,73 +45,18 @@ class Customer
         $this->created_at = new \DateTimeImmutable();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
-        return $this;
-    }
-
-    public function getPhone(): ?string
-    {
-        return $this->phone;
-    }
-
-    public function setPhone(string $phone): static
-    {
-        $this->phone = $phone;
-        return $this;
-    }
-
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(string $address): static
-    {
-        $this->address = $address;
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
-    {
-        $this->created_at = $created_at;
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Purchase>
-     */
-    public function getPurchases(): Collection
-    {
-        return $this->purchases;
-    }
+    public function getId(): ?int { return $this->id; }
+    public function getName(): ?string { return $this->name; }
+    public function setName(string $name): static { $this->name = $name; return $this; }
+    public function getEmail(): ?string { return $this->email; }
+    public function setEmail(?string $email): static { $this->email = $email; return $this; }
+    public function getPhone(): ?string { return $this->phone; }
+    public function setPhone(?string $phone): static { $this->phone = $phone; return $this; }
+    public function getAddress(): ?string { return $this->address; }
+    public function setAddress(?string $address): static { $this->address = $address; return $this; }
+    public function getCreatedAt(): ?\DateTimeImmutable { return $this->created_at; }
+    public function setCreatedAt(\DateTimeImmutable $created_at): static { $this->created_at = $created_at; return $this; }
+    public function getPurchases(): Collection { return $this->purchases; }
 
     public function addPurchase(Purchase $purchase): static
     {
@@ -120,11 +70,28 @@ class Customer
     public function removePurchase(Purchase $purchase): static
     {
         if ($this->purchases->removeElement($purchase)) {
-           
             if ($purchase->getCustomer() === $this) {
                 $purchase->setCustomer(null);
             }
         }
         return $this;
+    }
+
+    public function getTotalItemsCount(): int
+    {
+        $count = 0;
+        foreach ($this->purchases as $purchase) {
+            $count += $purchase->getQuantity() ?? 0;
+        }
+        return $count;
+    }
+
+    public function getGrandTotal(): float
+    {
+        $total = 0;
+        foreach ($this->purchases as $purchase) {
+            $total += (float) $purchase->getTotalPrice();
+        }
+        return $total;
     }
 }

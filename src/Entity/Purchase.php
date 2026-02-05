@@ -6,6 +6,7 @@ use App\Repository\PurchaseRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PurchaseRepository::class)]
+#[ORM\HasLifecycleCallbacks] 
 class Purchase
 {
     #[ORM\Id]
@@ -28,41 +29,32 @@ class Purchase
     #[ORM\Column]
     private ?\DateTimeImmutable $purchasedAt = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $productVariant = null;
-
     #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'purchases')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Customer $customer = null;
 
-    public function getId(): ?int { return $this->id; }
+    public function __construct() {
+        $this->purchasedAt = new \DateTimeImmutable();
+    }
 
+   
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function updateTotalPrice(): void {
+        if ($this->price && $this->quantity) {
+            $this->totalPrice = (string) ($this->price * $this->quantity);
+        }
+    }
+
+    public function getId(): ?int { return $this->id; }
     public function getItemName(): ?string { return $this->itemName; }
     public function setItemName(string $itemName): static { $this->itemName = $itemName; return $this; }
-
     public function getPrice(): ?float { return $this->price; }
     public function setPrice(float $price): static { $this->price = $price; return $this; }
-
     public function getQuantity(): ?int { return $this->quantity; }
     public function setQuantity(int $quantity): static { $this->quantity = $quantity; return $this; }
-
-    public function getTotalPrice(): ?string 
-    { 
-        return $this->totalPrice; 
-    }
-
-    public function setTotalPrice(?string $totalPrice): static 
-    { 
-        $this->totalPrice = $totalPrice; 
-        return $this; 
-    }
-
+    public function getTotalPrice(): ?string { return $this->totalPrice; }
     public function getPurchasedAt(): ?\DateTimeImmutable { return $this->purchasedAt; }
-    public function setPurchasedAt(\DateTimeImmutable $purchasedAt): static { $this->purchasedAt = $purchasedAt; return $this; }
-
     public function getCustomer(): ?Customer { return $this->customer; }
     public function setCustomer(?Customer $customer): static { $this->customer = $customer; return $this; }
-
-    public function getProductVariant(): ?string { return $this->productVariant; }
-    public function setProductVariant(?string $productVariant): static { $this->productVariant = $productVariant; return $this; }
-} 
+}

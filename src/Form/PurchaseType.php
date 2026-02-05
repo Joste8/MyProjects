@@ -3,37 +3,25 @@
 namespace App\Form;
 
 use App\Entity\Purchase;
-use App\Entity\Customer;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 
 class PurchaseType extends AbstractType
 {
-
-
-public function buildForm(FormBuilderInterface $builder, array $options): void
-{
-    $builder
-        ->add('customer', EntityType::class, [
-            'class' => Customer::class,
-            'choice_label' => 'name',
-            'placeholder' => 'Select a Customer',
-        ])
-        ->add('itemName')
-        ->add('price')
-        ->add('quantity')
-        ->add('purchasedAt', null, [
-            'widget' => 'single_text',
-            'data' => new \DateTimeImmutable(),
-        ]);
-}
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('itemName', TextType::class, ['label' => 'Item Name'])
+            ->add('price', NumberType::class, ['label' => 'Price'])
+            ->add('quantity', IntegerType::class, ['label' => 'Qty']);
+    }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            'data_class' => Purchase::class,
-        ]);
+        $resolver->setDefaults(['data_class' => Purchase::class]);
     }
 }

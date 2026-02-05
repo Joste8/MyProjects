@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Customer;
 
 class DashboardController extends AbstractDashboardController
 {
@@ -69,14 +70,14 @@ class DashboardController extends AbstractDashboardController
         return Dashboard::new()->setTitle('COFSO Admin');
     }
 
-    public function configureMenuItems(): iterable
-    {
-        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-        yield MenuItem::linkToCrud('Products (CRUD)', 'fa fa-box', Product::class);
-        yield MenuItem::linkToRoute('Purchase Module', 'fa fa-shopping-cart', 'admin_purchase');
-        yield MenuItem::linkToRoute('Category Module', 'fas fa-tags', 'app_category_index');
-        yield MenuItem::linkToRoute('SubCategory Module', 'fas fa-tags', 'app_subcategory_index');
-        yield MenuItem::linkToRoute('Customer Module', 'fas fa-User', 'app_customer_index');
+ public function configureMenuItems(): iterable
+{
+    yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
+    yield MenuItem::linkToCrud('Products (CRUD)', 'fa fa-box', Product::class);
+    yield MenuItem::linkToCrud('Customers', 'fas fa-users', Customer::class);
 
-    }
+    yield MenuItem::linkToRoute('Purchase Module', 'fa fa-shopping-cart', 'admin_purchase');
+    yield MenuItem::linkToRoute('Category Module', 'fas fa-tags', 'app_category_index');
+    yield MenuItem::linkToRoute('SubCategory Module', 'fas fa-tags', 'app_subcategory_index');
+}
 }
