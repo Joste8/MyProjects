@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
@@ -28,7 +27,6 @@ class Product
     #[ORM\ManyToOne(targetEntity: SubCategory::class)]
     private ?SubCategory $subCategory = null;
 
-    
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductVariant::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $variants;
 
@@ -113,18 +111,18 @@ class Product
     { 
         return $this->name ?? ''; 
     }
+
     public function getVariantDetails(): string
-{
-    if ($this->variants->isEmpty()) {
-        return 'No Variants';
-    }
+    {
+        if ($this->variants->isEmpty()) {
+            return 'No Variants';
+        }
 
-    $details = [];
-    foreach ($this->variants as $variant) {
-      
-        $details[] = sprintf('%s: %s (Stock: %d)', $variant->getName(), $variant->getValue(), $variant->getStock());
-    }
+        $details = [];
+        foreach ($this->variants as $variant) {
+            $details[] = sprintf('%s: %s (Stock: %d)', $variant->getName(), $variant->getValue(), $variant->getStock());
+        }
 
-    return implode(', ', $details);
-}
+        return implode(', ', $details);
+    }
 }

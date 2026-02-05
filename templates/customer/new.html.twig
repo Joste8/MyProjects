@@ -1,11 +1,32 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Customer{% endblock %}
-
 {% block body %}
-    <h1>Create new Customer</h1>
-
-    {{ include('customer/_form.html.twig') }}
-
-    <a href="{{ path('app_customer_index') }}">back to list</a>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Add New Purchase for {{ customer.name }}</h4>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                    <div class="mb-3">
+                        <label class="form-label">Product Name</label>
+                        {{ form_widget(form.itemName, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Price</label>
+                            {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Quantity</label>
+                            {{ form_widget(form.quantity, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-100">Save Purchase</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

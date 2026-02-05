@@ -45,4 +45,17 @@ class ProductVariant
     {
         return $this->name . ': ' . $this->value;
     }
+ #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
+private ?string $mrp = null;
+
+public function getVariantDetails(): string
+{
+    if ($this->productVariant) {
+       
+        return (string) $this->productVariant; 
+    }
+    return 'N/A';
+}
+public function getMrp(): ?string { return $this->mrp; }
+public function setMrp(?string $mrp): self { $this->mrp = $mrp; return $this; }
 }

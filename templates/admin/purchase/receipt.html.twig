@@ -4,11 +4,11 @@
     
     <div style="margin-top: 20px;">
         <p><strong>Date:</strong> {{ purchase.purchasedAt|date('d-m-Y H:i') }}</p>
-        <p><strong>Customer:</strong> {{ purchase.customerName }}</p>
+     <p><strong>Customer: </strong> {{ purchase.customer.name|default('Walking Customer') }}</p>
         <hr>
         <p><strong>Item:</strong> {{ purchase.itemName }}</p>
         {% if purchase.productVariant %}
-            <p><strong>Variant:</strong> {{ purchase.productVariant.value }}</p>
+            <p><strong>Variant: </strong> {{ purchase.productVariant }}</p>
         {% endif %}
         <p><strong>Quantity:</strong> {{ purchase.quantity }}</p>
         <p><strong>Price:</strong> ₹{{ purchase.price }}</p>

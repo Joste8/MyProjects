@@ -51,15 +51,14 @@ class PurchaseController extends AbstractController
 
         
         $sale = new Purchase();
-        $sale->setItemName($variant->getProduct()->getName());
-        $sale->setCustomerName($customer->getName()); 
-        $sale->setQuantity($quantity);
-        $sale->setPrice($variant->getProduct()->getPrice());
-        $sale->setProductVariant($variant);
-        $sale->setPurchasedAt(new \DateTimeImmutable());
-
+$sale->setItemName($variant->getProduct()->getName());
+$sale->setCustomer($customer);
+$sale->setQuantity($quantity);
+$sale->setPrice($variant->getProduct()->getPrice());
+$sale->setProductVariant($variant->getValue());
+$sale->setPurchasedAt(new \DateTimeImmutable());
         
-        $variant->setStock($variant->getStock() - $quantity);
+      $sale->setStockBalance($variant->getStock());
 
         $entityManager->persist($sale);
         $entityManager->flush();

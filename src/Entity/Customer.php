@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CustomerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -29,6 +31,15 @@ class Customer
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
+    #[ORM\OneToMany(targetEntity: Purchase::class, mappedBy: 'customer', orphanRemoval: true)]
+    private Collection $purchases;
+
+    public function __construct()
+    {
+        $this->purchases = new ArrayCollection();
+        $this->created_at = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -42,7 +53,6 @@ class Customer
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -54,7 +64,6 @@ class Customer
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
@@ -66,7 +75,6 @@ class Customer
     public function setPhone(string $phone): static
     {
         $this->phone = $phone;
-
         return $this;
     }
 
@@ -78,7 +86,6 @@ class Customer
     public function setAddress(string $address): static
     {
         $this->address = $address;
-
         return $this;
     }
 
@@ -90,7 +97,34 @@ class Customer
     public function setCreatedAt(\DateTimeImmutable $created_at): static
     {
         $this->created_at = $created_at;
+        return $this;
+    }
 
+    /**
+     * @return Collection<int, Purchase>
+     */
+    public function getPurchases(): Collection
+    {
+        return $this->purchases;
+    }
+
+    public function addPurchase(Purchase $purchase): static
+    {
+        if (!$this->purchases->contains($purchase)) {
+            $this->purchases->add($purchase);
+            $purchase->setCustomer($this);
+        }
+        return $this;
+    }
+
+    public function removePurchase(Purchase $purchase): static
+    {
+        if ($this->purchases->removeElement($purchase)) {
+           
+            if ($purchase->getCustomer() === $this) {
+                $purchase->setCustomer(null);
+            }
+        }
         return $this;
     }
 }
