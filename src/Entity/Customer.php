@@ -46,16 +46,28 @@ class Customer
     }
 
     public function getId(): ?int { return $this->id; }
+
     public function getName(): ?string { return $this->name; }
     public function setName(string $name): static { $this->name = $name; return $this; }
+
     public function getEmail(): ?string { return $this->email; }
     public function setEmail(?string $email): static { $this->email = $email; return $this; }
-    public function getPhone(): ?string { return $this->phone; }
+
+    public function getPhone(): ?string 
+    { 
+        return $this->phone ?? 'No Phone'; 
+    }
     public function setPhone(?string $phone): static { $this->phone = $phone; return $this; }
-    public function getAddress(): ?string { return $this->address; }
+
+    public function getAddress(): ?string 
+    { 
+        return $this->address ?? 'No Address'; 
+    }
     public function setAddress(?string $address): static { $this->address = $address; return $this; }
+
     public function getCreatedAt(): ?\DateTimeImmutable { return $this->created_at; }
     public function setCreatedAt(\DateTimeImmutable $created_at): static { $this->created_at = $created_at; return $this; }
+
     public function getPurchases(): Collection { return $this->purchases; }
 
     public function addPurchase(Purchase $purchase): static
@@ -94,4 +106,11 @@ class Customer
         }
         return $total;
     }
+ 
+
+public function __toString(): string
+{
+   
+    return $this->name; 
 }
+} 

@@ -3,6 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Product;
+use App\Entity\Customer;
+use App\Entity\Purchase;
 use App\Entity\Notification;
 use App\Repository\ProductRepository;
 use App\Repository\NotificationRepository;
@@ -12,7 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\Customer;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 
 class DashboardController extends AbstractDashboardController
 {
@@ -33,7 +35,6 @@ class DashboardController extends AbstractDashboardController
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-        
         $lowStockProducts = $this->productRepo->createQueryBuilder('p')
             ->where('p.stock < :limit')
             ->setParameter('limit', 5)
@@ -41,9 +42,7 @@ class DashboardController extends AbstractDashboardController
             ->getResult();
 
         foreach ($lowStockProducts as $product) {
-            
             $msg = 'Low stock alert: ' . $product->getName() . ' (Only ' . $product->getStock() . ' left!)';
-            
             $exists = $this->notifRepo->findOneBy(['message' => $msg]);
 
             if (!$exists) {
@@ -56,7 +55,6 @@ class DashboardController extends AbstractDashboardController
         }
         $this->entityManager->flush();
 
-        
         return $this->render('admin/dashboard.html.twig', [
             'notifications' => $this->notifRepo->findBy([], ['createdAt' => 'DESC'], 5),
             'lowStock' => $lowStockProducts,
@@ -67,17 +65,81 @@ class DashboardController extends AbstractDashboardController
 
     public function configureDashboard(): Dashboard
     {
-        return Dashboard::new()->setTitle('COFSO Admin');
+        return Dashboard::new()
+            ->setTitle('<b>COFSO</b> Admin')
+            ->renderContentMaximized();
     }
 
- public function configureMenuItems(): iterable
+    public function configureAssets(): Assets
 {
-    yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-    yield MenuItem::linkToCrud('Products (CRUD)', 'fa fa-box', Product::class);
-    yield MenuItem::linkToCrud('Customers', 'fas fa-users', Customer::class);
+    return parent::configureAssets()
+        ->addHtmlContentToHead('
+            <style>
+               
+                .table {
+                    border-collapse: separate !important;
+                    border-spacing: 0 !important;
+                    border: 1px solid #444 !important;
+                    border-radius: 12px !important;
+                    overflow: hidden !important;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+                    margin-top: 20px !important;
+                }
 
-    yield MenuItem::linkToRoute('Purchase Module', 'fa fa-shopping-cart', 'admin_purchase');
-    yield MenuItem::linkToRoute('Category Module', 'fas fa-tags', 'app_category_index');
-    yield MenuItem::linkToRoute('SubCategory Module', 'fas fa-tags', 'app_subcategory_index');
+                .table thead th {
+                    background-color: #2c2f33 !important;
+                    color: #5865f2 !important; 
+                    font-weight: 700 !important;
+                    padding: 16px !important;
+                    border-bottom: 2px solid #444 !important;
+                    border-right: 1px solid #3d3d3d !important;
+                }
+
+                .table tbody td {
+                    padding: 14px !important;
+                    border-right: 1px solid #333 !important;
+                    border-bottom: 1px solid #333 !important;
+                    font-size: 0.95rem !important;
+                }
+
+                
+                .table td:nth-last-child(2) {
+                    font-weight: bold !important;
+                    color: #2ecc71 !important; 
+                    font-size: 1.1rem !important;
+                    text-align: right !important;
+                    background-color: rgba(46, 204, 113, 0.05) !important;
+                }
+
+                .table td:nth-child(2) {
+                    font-weight: 600 !important;
+                    color: #ffffff !important;
+                }
+
+          
+                .table tbody tr:hover {
+                    background-color: #23272a !important;
+                    transition: 0.3s ease;
+                }
+
+                .content-footer {
+                    color: #888 !important;
+                    font-style: italic !important;
+                }
+            </style>
+        ');
 }
+
+    public function configureMenuItems(): iterable
+    {
+        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
+        yield MenuItem::section('Inventory');
+        yield MenuItem::linkToCrud('Products', 'fa fa-box-open', Product::class);
+        yield MenuItem::linkToCrud('Customers', 'fas fa-user-friends', Customer::class);
+        yield MenuItem::section('Sales');
+        yield MenuItem::linkToCrud('Purchase', 'fas fa-shopping-cart', Purchase::class);
+        yield MenuItem::section('Categories');
+        yield MenuItem::linkToRoute('Category', 'fas fa-tags', 'app_category_index');
+        yield MenuItem::linkToRoute('SubCategory', 'fas fa-tag', 'app_subcategory_index');
+    }
 }

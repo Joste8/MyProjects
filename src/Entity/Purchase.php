@@ -37,7 +37,6 @@ class Purchase
         $this->purchasedAt = new \DateTimeImmutable();
     }
 
-   
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
     public function updateTotalPrice(): void {
@@ -54,7 +53,15 @@ class Purchase
     public function getQuantity(): ?int { return $this->quantity; }
     public function setQuantity(int $quantity): static { $this->quantity = $quantity; return $this; }
     public function getTotalPrice(): ?string { return $this->totalPrice; }
+    
+   
+    public function setTotalPrice(?string $totalPrice): static 
+    {
+        $this->totalPrice = $totalPrice;
+        return $this;
+    }
+
     public function getPurchasedAt(): ?\DateTimeImmutable { return $this->purchasedAt; }
     public function getCustomer(): ?Customer { return $this->customer; }
     public function setCustomer(?Customer $customer): static { $this->customer = $customer; return $this; }
-}
+} 
