@@ -13,6 +13,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TelephoneField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField; 
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 
 class CustomerCrudController extends AbstractCrudController
 {
@@ -23,11 +25,12 @@ class CustomerCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
-       
         return $actions->add(Crud::PAGE_INDEX, Action::DETAIL);
     }
 
-    public function configureFields(string $pageName): iterable
+    
+
+public function configureFields(string $pageName): iterable
 {
     yield TextField::new('name', 'Customer Name');
     yield EmailField::new('email', 'Email Address');
@@ -35,13 +38,23 @@ class CustomerCrudController extends AbstractCrudController
     yield TextareaField::new('address', 'Address');
 
     if ($pageName === Crud::PAGE_DETAIL) {
-        yield MoneyField::new('grandTotal', 'Total Purchase Amount')
+        
+        yield FormField::addPanel('Insights & History');
+
+        
+        yield IdField::new('id', 'Smart Recommendations')
+            ->onlyOnDetail()
+            ->setTemplatePath('admin/customer/recommendations.html.twig');
+
+        
+        yield CollectionField::new('purchases', 'Purchase History')
+            ->onlyOnDetail()
+            ->setTemplatePath('admin/purchase/history.html.twig');
+
+        yield MoneyField::new('grandTotal', 'Overall Spent')
             ->setCurrency('INR')
             ->setStoredAsCents(false)
-            ->setCssClass('text-success h4'); 
-
-        yield CollectionField::new('purchases', 'Purchase Grand History')
-            ->setTemplatePath('admin/purchase/history.html.twig');
+            ->onlyOnDetail();
     }
 }
 }

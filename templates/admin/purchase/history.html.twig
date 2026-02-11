@@ -1,35 +1,38 @@
-{# templates/admin/purchase/history.html.twig #}
-<div class="table-responsive">
-
-<tfoot class="bg-dark">
-        <tr>
-            <td colspan="3" class="text-right"><strong>Grand Total:</strong></td>
-            <td class="text-success" style="font-weight: bold; font-size: 1.2rem;">
-                ₹{{ entity.instance.grandTotal|number_format(2) }}
-            </td>
-        </tr>
-    </tfoot>
-</table>
-    <table class="table table-sm table-hover">
-        <thead class="thead-dark">
+<div class="table-responsive shadow-sm rounded">
+    <table class="table table-sm table-hover border">
+        <thead class="bg-dark text-white">
             <tr>
                 <th>Item Name</th>
-                <th>Qty</th>
+                <th class="text-center">Qty</th>
                 <th>Unit Price</th>
-                <th>Total</th>
+                <th class="text-right">Total</th>
             </tr>
         </thead>
         <tbody>
             {% for purchase in field.value %}
                 <tr>
-                    <td>{{ purchase.itemName }}</td>
-                    <td><span class="badge badge-info">{{ purchase.quantity }}</span></td>
+                    <td><strong>{{ purchase.itemName }}</strong></td>
+                    <td class="text-center">
+                        <span class="badge badge-info px-2">{{ purchase.quantity }}</span>
+                    </td>
                     <td>₹{{ purchase.price|number_format(2) }}</td>
-                    <td class="text-success fw-bold">₹{{ purchase.totalPrice|number_format(2) }}</td>
+                    <td class="text-right text-success font-weight-bold">
+                        ₹{{ purchase.totalPrice|number_format(2) }}
+                    </td>
                 </tr>
             {% else %}
-                <tr><td colspan="4" class="text-center text-muted">No history found.</td></tr>
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-3">No purchase history found for this customer.</td>
+                </tr>
             {% endfor %}
         </tbody>
+        <tfoot class="bg-light">
+            <tr>
+                <td colspan="3" class="text-right"><strong>Total Amount:</strong></td>
+                <td class="text-right text-primary h5 font-weight-bold">
+                    ₹{{ entity.instance.grandTotal|number_format(2) }}
+                </td>
+            </tr>
+        </tfoot>
     </table>
 </div>
