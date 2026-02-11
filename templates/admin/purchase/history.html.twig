@@ -1,0 +1,35 @@
+{# templates/admin/purchase/history.html.twig #}
+<div class="table-responsive">
+
+<tfoot class="bg-dark">
+        <tr>
+            <td colspan="3" class="text-right"><strong>Grand Total:</strong></td>
+            <td class="text-success" style="font-weight: bold; font-size: 1.2rem;">
+                ₹{{ entity.instance.grandTotal|number_format(2) }}
+            </td>
+        </tr>
+    </tfoot>
+</table>
+    <table class="table table-sm table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Item Name</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase in field.value %}
+                <tr>
+                    <td>{{ purchase.itemName }}</td>
+                    <td><span class="badge badge-info">{{ purchase.quantity }}</span></td>
+                    <td>₹{{ purchase.price|number_format(2) }}</td>
+                    <td class="text-success fw-bold">₹{{ purchase.totalPrice|number_format(2) }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" class="text-center text-muted">No history found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
