@@ -1,6 +1,5 @@
 {% set purchasedItems = [] %}
 {% for purchase in entity.instance.purchases %}
-    {# Ningalude Purchase entity-il property 'itemName' ennaano 'name' ennaano ennu urappu varuthuka #}
     {% set purchasedItems = purchasedItems|merge([purchase.itemName]) %}
 {% endfor %}
 
@@ -12,19 +11,25 @@
         <div class="d-flex flex-wrap gap-2">
             {% set suggested = false %}
             
-            
             {% for product in field.customOptions.get('allProducts')|default([]) %}
-                
-        
                 {% if product.name not in purchasedItems %}
                     {% set suggested = true %}
-                    <div class="p-2 border rounded bg-light mr-2 mb-2 shadow-sm">
-                        <strong class="text-dark">{{ product.name }}</strong>
-                        <div class="text-info small">Recommended for you</div>
-                    </div>
+                    
+                    {# Dynamic URL generation for each product #}
+                    {% set productUrl = ea_url()
+                        .setController('App\\Controller\\Admin\\ProductCrudController')
+                        .setAction('detail')
+                        .setEntityId(product.id) 
+                    %}
+                    
+                    <a href="{{ productUrl }}" 
+                       class="p-2 border rounded bg-light mr-2 mb-2 shadow-sm text-decoration-none hover-shadow" 
+                       style="min-width: 140px; display: inline-block;">
+                        <strong class="text-dark d-block">{{ product.name }}</strong>
+                        <span class="text-info small">View Product →</span>
+                    </a>
                 {% endif %}
-
-            {% endfor %} {# <--- Loop ivide aanu close cheyyendath #}
+            {% endfor %}
 
             {% if not suggested %}
                 <p class="text-muted italic small">No new suggestions available at the moment.</p>
@@ -32,3 +37,12 @@
         </div>
     </div>
 </div>
+
+<style>
+    .hover-shadow:hover {
+        background-color: #f8f9fa !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+        transition: 0.2s;
+    }
+</style>

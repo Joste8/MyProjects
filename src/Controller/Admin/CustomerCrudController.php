@@ -3,7 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Customer;
-use App\Entity\Product; // IMPORTANT: Product entity import cheyyanam
+use App\Entity\Product;
+use App\Controller\Admin\ProductCrudController; 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -22,7 +23,6 @@ class CustomerCrudController extends AbstractCrudController
 {
     private $entityManager;
 
-    
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
@@ -48,12 +48,10 @@ class CustomerCrudController extends AbstractCrudController
         if ($pageName === Crud::PAGE_DETAIL) {
             yield FormField::addPanel('Insights & History');
 
-            
             $allProducts = $this->entityManager->getRepository(Product::class)->findAll();
-
+            
             yield IdField::new('id', 'Smart Recommendations')
                 ->onlyOnDetail()
-                
                 ->setTemplatePath('admin/customer/recommendations.html.twig')
                 ->setCustomOptions([
                     'allProducts' => $allProducts,
