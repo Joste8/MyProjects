@@ -16,13 +16,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField; 
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
-use Doctrine\ORM\EntityManagerInterface; // EntityManager import cheyyan
+use Doctrine\ORM\EntityManagerInterface; 
 
 class CustomerCrudController extends AbstractCrudController
 {
     private $entityManager;
 
-    // Constructor vazhi EntityManager edukkunnu
+    
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
@@ -48,12 +48,12 @@ class CustomerCrudController extends AbstractCrudController
         if ($pageName === Crud::PAGE_DETAIL) {
             yield FormField::addPanel('Insights & History');
 
-            // Database-il ninnu ella products-um edukkunnu
+            
             $allProducts = $this->entityManager->getRepository(Product::class)->findAll();
 
             yield IdField::new('id', 'Smart Recommendations')
                 ->onlyOnDetail()
-                // 'setTemplatePath' inte randaamathe parameter aayi data pass cheyyunnu
+                
                 ->setTemplatePath('admin/customer/recommendations.html.twig')
                 ->setCustomOptions([
                     'allProducts' => $allProducts,

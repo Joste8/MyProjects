@@ -1,4 +1,3 @@
-{# 1. Customer mumbu vaangiya items-inte names edukkuka #}
 {% set purchasedItems = [] %}
 {% for purchase in entity.instance.purchases %}
     {# Ningalude Purchase entity-il property 'itemName' ennaano 'name' ennaano ennu urappu varuthuka #}
@@ -13,10 +12,10 @@
         <div class="d-flex flex-wrap gap-2">
             {% set suggested = false %}
             
-            {# 2. Controller-il ninnu pass cheytha allProducts loop cheyyunnu #}
+            
             {% for product in field.customOptions.get('allProducts')|default([]) %}
                 
-                {# 3. Alredy vaangiya product alla ennu urappu varuthunnu #}
+        
                 {% if product.name not in purchasedItems %}
                     {% set suggested = true %}
                     <div class="p-2 border rounded bg-light mr-2 mb-2 shadow-sm">
