@@ -125,7 +125,7 @@ class DashboardController extends AbstractDashboardController
                         color: #ffffff !important;
                     }
                     .table tbody tr:hover {
-                        background-color: #23272a !important;
+                        background-color: #247ec2 !important;
                         transition: 0.3s ease;
                     }
                 </style>

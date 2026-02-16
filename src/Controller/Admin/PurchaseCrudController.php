@@ -8,6 +8,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField; 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -22,7 +23,6 @@ class PurchaseCrudController extends AbstractCrudController
         return Purchase::class;
     }
 
-    
     public function configureActions(Actions $actions): Actions
     {
         $exportAction = Action::new('exportExcel', 'Export to Excel')
@@ -34,23 +34,21 @@ class PurchaseCrudController extends AbstractCrudController
         return $actions->add(Crud::PAGE_INDEX, $exportAction);
     }
 
-    
     public function exportExcel()
     {
         $purchases = $this->container->get('doctrine')->getRepository(Purchase::class)->findAll();
-
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         
-    
+        
         $sheet->setCellValue('A1', 'Product Name');
         $sheet->setCellValue('B1', 'Customer');
         $sheet->setCellValue('C1', 'Unit Price (INR)');
         $sheet->setCellValue('D1', 'Qty');
         $sheet->setCellValue('E1', 'Total Amount');
+        $sheet->setCellValue('F1', 'Status'); 
 
-        
-        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
 
         $row = 2;
         foreach ($purchases as $purchase) {
@@ -59,19 +57,18 @@ class PurchaseCrudController extends AbstractCrudController
             $sheet->setCellValue('C' . $row, $purchase->getPrice());
             $sheet->setCellValue('D' . $row, $purchase->getQuantity());
             $sheet->setCellValue('E' . $row, $purchase->getTotalPrice());
+            $sheet->setCellValue('F' . $row, ucfirst($purchase->getStatus() ?? 'Pending'));
             $row++;
         }
 
         $writer = new Xlsx($spreadsheet);
-        
         $response = new StreamedResponse(function () use ($writer) {
             $writer->save('php://output');
         });
 
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $response->headers->set('Content-Disposition', 'attachment;filename="purchase_report.xlsx"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-
+        
         return $response;
     }
 
@@ -100,6 +97,18 @@ class PurchaseCrudController extends AbstractCrudController
                 ->setCurrency('INR')
                 ->setStoredAsCents(false)
                 ->setCssClass('text-success fw-bold'),
+
+            ChoiceField::new('status', 'Payment Status')
+                ->setChoices([
+                    'Paid' => 'paid',
+                    'Pending' => 'pending',
+                    'Failed' => 'failed',
+                ])
+                ->renderAsBadges([
+                    'paid' => 'success',
+                    'pending' => 'warning',
+                    'failed' => 'danger',
+                ]),
         ];
     }
 }

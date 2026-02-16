@@ -33,6 +33,9 @@ class Purchase
     #[ORM\JoinColumn(nullable: false)]
     private ?Customer $customer = null;
 
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $status = 'pending'; 
+
     public function __construct() {
         $this->purchasedAt = new \DateTimeImmutable();
     }
@@ -54,7 +57,6 @@ class Purchase
     public function setQuantity(int $quantity): static { $this->quantity = $quantity; return $this; }
     public function getTotalPrice(): ?string { return $this->totalPrice; }
     
-   
     public function setTotalPrice(?string $totalPrice): static 
     {
         $this->totalPrice = $totalPrice;
@@ -64,4 +66,15 @@ class Purchase
     public function getPurchasedAt(): ?\DateTimeImmutable { return $this->purchasedAt; }
     public function getCustomer(): ?Customer { return $this->customer; }
     public function setCustomer(?Customer $customer): static { $this->customer = $customer; return $this; }
-} 
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): static
+    {
+        $this->status = $status;
+        return $this;
+    }
+}
