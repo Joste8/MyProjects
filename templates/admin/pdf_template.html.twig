@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Purchase Report</title>
+    <style>
+        
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 12px;
+            color: #333;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            text-transform: uppercase;
+            color: #2c3e50;
+        }
+        .header p {
+            margin: 5px 0 0;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+        th {
+            background-color: #34495e;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #2c3e50;
+        }
+        td {
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            vertical-align: middle;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-paid {
+            color: #27ae60;
+        }
+        .status-pending {
+            color: #e67e22;
+        }
+        .status-failed {
+            color: #c0392b;
+        }
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 10px;
+            color: #95a5a6;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Purchase Report</h1>
+        <p>Report Generated on: {{ "now"|date("d-m-Y h:i A") }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 25%;">Product Name</th>
+                <th style="width: 20%;">Customer</th>
+                <th class="text-right">Unit Price</th>
+                <th style="text-align: center;">Qty</th>
+                <th class="text-right">Total Amount</th>
+                <th style="text-align: center;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase in purchases %}
+                <tr>
+                    <td style="font-weight: bold;">{{ purchase.itemName }}</td>
+                    <td>{{ purchase.customer ? purchase.customer.name : 'N/A' }}</td>
+                    <td class="text-right">INR {{ purchase.price|number_format(2) }}</td>
+                    <td style="text-align: center;">{{ purchase.quantity }}</td>
+                    <td class="text-right" style="font-weight: bold;">
+                        INR {{ purchase.totalPrice|number_format(2) }}
+                    </td>
+                    <td style="text-align: center;">
+                        <span class="badge status-{{ purchase.status|lower }}">
+                            {{ purchase.status|upper }}
+                        </span>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center;">No purchase records found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>Confidential Report - Generated from COFSO Admin Panel</p>
+        <p>Page 1 of 1</p>
+    </div>
+</div>
+
+</body>
+</html>

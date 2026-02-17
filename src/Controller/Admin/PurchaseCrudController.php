@@ -12,9 +12,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class PurchaseCrudController extends AbstractCrudController
 {
@@ -25,21 +29,27 @@ class PurchaseCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
-        $exportAction = Action::new('exportExcel', 'Export to Excel')
+        $exportExcel = Action::new('exportExcel', 'Export to Excel', 'fa fa-file-excel')
             ->linkToCrudAction('exportExcel')
             ->createAsGlobalAction()
-            ->setIcon('fa fa-file-excel')
             ->setCssClass('btn btn-success');
 
-        return $actions->add(Crud::PAGE_INDEX, $exportAction);
+        $exportPdf = Action::new('exportPdf', 'Export to PDF', 'fa fa-file-pdf')
+            ->linkToCrudAction('exportToPdf')
+            ->createAsGlobalAction()
+            ->setCssClass('btn btn-danger');
+
+        return $actions
+            ->add(Crud::PAGE_INDEX, $exportExcel)
+            ->add(Crud::PAGE_INDEX, $exportPdf);
     }
 
+    
     public function exportExcel()
     {
         $purchases = $this->container->get('doctrine')->getRepository(Purchase::class)->findAll();
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        
         
         $sheet->setCellValue('A1', 'Product Name');
         $sheet->setCellValue('B1', 'Customer');
@@ -72,6 +82,40 @@ class PurchaseCrudController extends AbstractCrudController
         return $response;
     }
 
+    public function exportToPdf(AdminContext $context): Response
+{
+    
+    ini_set('memory_limit', '256M');
+
+    $purchases = $this->container->get('doctrine')->getRepository(Purchase::class)->findAll();
+
+    $pdfOptions = new Options();
+    
+    $pdfOptions->set('defaultFont', 'Helvetica');
+    $pdfOptions->set('isHtml5ParserEnabled', true);
+    $pdfOptions->set('isRemoteEnabled', true); 
+
+    $dompdf = new Dompdf($pdfOptions);
+
+    $html = $this->renderView('admin/pdf_template.html.twig', [
+        'purchases' => $purchases,
+    ]);
+
+    try {
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return new Response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="purchase_report.pdf"',
+        ]);
+    } catch (\Exception $e) {
+        
+        return new Response("PDF Generation Error: " . $e->getMessage());
+    }
+}
+
     public function configureFields(string $pageName): iterable
     {
         $quantityField = IntegerField::new('quantity', 'Qty');
@@ -82,33 +126,14 @@ class PurchaseCrudController extends AbstractCrudController
         }
 
         return [
-            TextField::new('itemName', 'Product Name')
-                ->setCssClass('fw-bold text-primary'),
-
+            TextField::new('itemName', 'Product Name')->setCssClass('fw-bold text-primary'),
             AssociationField::new('customer', 'Customer'),
-
-            MoneyField::new('price', 'Unit Price')
-                ->setCurrency('INR')
-                ->setStoredAsCents(false),
-
+            MoneyField::new('price', 'Unit Price')->setCurrency('INR')->setStoredAsCents(false),
             $quantityField,
-            
-            MoneyField::new('totalPrice', 'Total Amount')
-                ->setCurrency('INR')
-                ->setStoredAsCents(false)
-                ->setCssClass('text-success fw-bold'),
-
+            MoneyField::new('totalPrice', 'Total Amount')->setCurrency('INR')->setStoredAsCents(false)->setCssClass('text-success fw-bold'),
             ChoiceField::new('status', 'Payment Status')
-                ->setChoices([
-                    'Paid' => 'paid',
-                    'Pending' => 'pending',
-                    'Failed' => 'failed',
-                ])
-                ->renderAsBadges([
-                    'paid' => 'success',
-                    'pending' => 'warning',
-                    'failed' => 'danger',
-                ]),
+                ->setChoices(['Paid' => 'paid', 'Pending' => 'pending', 'Failed' => 'failed'])
+                ->renderAsBadges(['paid' => 'success', 'pending' => 'warning', 'failed' => 'danger']),
         ];
     }
 }
